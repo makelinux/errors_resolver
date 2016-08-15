@@ -1,0 +1,47 @@
+#!/bin/bash
+
+export CPPFLAGS
+export LDFLAGS=
+export LDLIBS
+
+CPPFLAGS=-Wall
+export CTAGS='-I __THROW --exclude=etip.h'
+
+export includedir=/usr/include
+
+[ -z "$CC" ] && CC=gcc
+eval $(echo $($CC -v 2>&1) | grep -o 'includedir=\S*')
+
+need_header() { CPPFLAGS+=" -include $1"; } 
+need_lib_path() { LDFLAGS+=" -L $1"; LD_LIBRARY_PATH+=:$1; }
+need_library() { LDLIBS+=" -l $1"; }
+
+showv() 
+{ 
+	val=$(eval "echo \$${1}"); echo $1=$val; 
+}
+
+make -s -B -C sub
+#make -B -f /dev/null errors_resolver_sample
+
+eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py | sort -u)"
+
+eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py | sort -u)"
+
+eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py | sort -u)"
+
+#make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py
+make -B -f /dev/null errors_resolver_sample
+
+showv CPPFLAGS
+showv LDFLAGS
+showv LDLIBS
+showv LD_LIBRARY_PATH
+arch=$(echo $(file -e elf ./errors_resolver_sample | cut -d',' -f2 | tr - _))
+if [[ $arch = $(uname -m) ]]; 
+then
+	./errors_resolver_sample
+else
+	echo detected architecture $arch
+	qemu-${arch,,} -L /usr/"${CC%-*}" ./errors_resolver_sample
+fi
