@@ -1,1 +1,1 @@
-void sub();
+void * sub(void *);

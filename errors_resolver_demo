@@ -5,40 +5,55 @@ export LDFLAGS=
 export LDLIBS
 
 CPPFLAGS=-Wall
-export CTAGS='-I __THROW --exclude=etip.h'
+CTAGS="-I __THROW,__THROWNL,__nonnull+ --exclude=etip.h"
+CTAGS+=" --exclude=mysql"
+export CTAGS
+# Credit: http://stackoverflow.com/questions/1632633/ctags-does-not-parse-stdio-h-properly#1632633
 
 export includedir=/usr/include
+export lib_path=/lib:.
 
 [ -z "$CC" ] && CC=gcc
 eval $(echo $($CC -v 2>&1) | grep -o 'includedir=\S*')
 
-need_header() { CPPFLAGS+=" -include $1"; } 
-need_lib_path() { LDFLAGS+=" -L $1"; LD_LIBRARY_PATH+=:$1; }
-need_library() { LDLIBS+=" -l $1"; }
-
-showv() 
-{ 
-	val=$(eval "echo \$${1}"); echo $1=$val; 
+showv()
+{
+	val=$(eval "echo \$${1}"); echo $1=$val;
 }
 
 make -s -B -C sub
-#make -B -f /dev/null errors_resolver_sample
+#make -B -f /dev/null errors_resolver_sample > /dev/null
 
-eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py | sort -u)"
+echo pass 1: resolve headers
+eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py 2> /dev/null | tee out.tmp)"
+cat out.tmp
+echo
 
-eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py | sort -u)"
+echo pass 2: resolve libraries
+eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py 2> /dev/null | tee out.tmp)"
+cat out.tmp
+echo
 
-eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py | sort -u)"
+echo pass 3: resolve library paths
+eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py 2> /dev/null | tee out.tmp)"
+cat out.tmp
+echo
 
-#make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py
+echo Final compilation:
 make -B -f /dev/null errors_resolver_sample
 
+echo Found solution:
 showv CPPFLAGS
 showv LDFLAGS
 showv LDLIBS
 showv LD_LIBRARY_PATH
-arch=$(echo $(file -e elf ./errors_resolver_sample | cut -d',' -f2 | tr - _))
-if [[ $arch = $(uname -m) ]]; 
+
+if [ -e ./errors_resolver_sample ]; then
+	arch=$(echo $(file -e elf ./errors_resolver_sample | cut -d',' -f2 | tr - _))
+else
+	arch=$(uname -m)
+fi
+if [[ $arch = $(uname -m) ]];
 then
 	./errors_resolver_sample
 else

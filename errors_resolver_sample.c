@@ -19,6 +19,8 @@ int main(void)
 		unsigned char *p = (unsigned char*)he->h_addr_list[0];
 		printf("addr=%u.%u.%u.%u\n", p[0], p[1], p[2], p[3]);
 	}
-	sub();
+	sub(NULL);
+	pthread_t thread;
+	pthread_create(&thread, NULL, &sub, NULL);
 	exit(EXIT_SUCCESS);
 }

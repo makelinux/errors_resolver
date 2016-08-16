@@ -5,3 +5,4 @@ prototype.tags
 system.tags
 tags
 *.so
+*.tmp
