@@ -5,10 +5,12 @@ from __future__ import print_function
 from pprint import pprint
 import fileinput, re, subprocess, os, sys, inspect
 
-lib_path = os.environ.get('lib_path', 'a:q').replace(':', ' ')
+lib_path = os.environ.get('lib_path', '').replace(':', ' ')
+verbose = os.environ.get('VERBOSE', 0)
 
 def log(*args, **kwargs):
-    print(inspect.stack()[1][3], str(*args).rstrip(), file=sys.stderr, **kwargs)
+    if verbose:
+        print(inspect.stack()[1][3], str(*args).rstrip(), file=sys.stderr, **kwargs)
     pass
 
 def popen_readline(cmd):
@@ -18,8 +20,8 @@ def popen_readline(cmd):
 def search_libraries(undefined):
     # TODO
     line = popen_readline(
-            'nm --demangle --defined-only --print-file-name $(find ' + lib_path + ' -name "lib*.so" -o -name "lib*.so.*") 2> /dev/null \
-            | grep --word-regexp ".* T ' + undefined + '" | cut --fields=1 --delimiter=":"')
+            'nm --demangle --defined-only --print-file-name $(find ' + lib_path + ' -name "lib*.so" -o -name "lib*.so.*") 2> /dev/null'
+            '| grep --word-regexp ".* T ' + undefined + '" | cut --fields=1 --delimiter=":"')
     m = re.match(r'.*\/lib(.*)\.so', line)
     if m is not None:
         return "LDLIBS+=' -l %s';" % m.group(1)
@@ -35,12 +37,12 @@ def search_lib_path(lib):
 def search_declarations(undeclared):
     log(undeclared)
     # TODO: man 3 $undeclared | grep '#include'
-    f = popen_readline('grep "^' + undeclared + '\t" system.tags prototype.tags \
-            | cut --fields=2 \
-            | awk "{ print length, \$0 }" \
-            | sort --numeric-sort --stable \
-            | cut --delimiter=" " --fields=2- \
-            | head --lines 1')
+    f = popen_readline('grep "^' + undeclared + '\t" system.tags prototype.tags '
+            '| cut --fields=2'
+            '| awk "{ print length, \$0 }"'
+            '| sort --numeric-sort --stable'
+            '| cut --delimiter=" " --fields=2-'
+            '| head --lines 1')
     log('f=' + f)
     f = f.replace('/usr/include/', '') # TODO: generalize with includedir
     if f:

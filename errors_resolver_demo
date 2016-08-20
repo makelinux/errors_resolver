@@ -5,21 +5,24 @@ export LDFLAGS=
 export LDLIBS
 
 CPPFLAGS=-Wall
-CTAGS="-I __THROW,__THROWNL,__nonnull+ --exclude=etip.h"
-CTAGS+=" --exclude=mysql"
+CTAGS="-I __THROW,__THROWNL,__nonnull+"
+CTAGS+=" --exclude=etip.h" # avoid exit collision
+#CTAGS+=" --exclude=mysql"
 export CTAGS
 # Credit: http://stackoverflow.com/questions/1632633/ctags-does-not-parse-stdio-h-properly#1632633
 
 export includedir=/usr/include
-export lib_path=/lib:.
 
 [ -z "$CC" ] && CC=gcc
 eval $(echo $($CC -v 2>&1) | grep -o 'includedir=\S*')
+export lib_path=$($CC -Xlinker --verbose  2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1:/g'  | grep -vE '^$'):.
 
 showv()
 {
-	val=$(eval "echo \$${1}"); echo $1=$val;
+	val=$(eval "echo \$${1}"); echo -n "$1='$val' "
 }
+
+showv lib_path
 
 make -s -B -C sub
 #make -B -f /dev/null errors_resolver_sample > /dev/null
@@ -42,21 +45,26 @@ echo
 echo Final compilation:
 make -B -f /dev/null errors_resolver_sample
 
-echo Found solution:
-showv CPPFLAGS
-showv LDFLAGS
-showv LDLIBS
-showv LD_LIBRARY_PATH
-
 if [ -e ./errors_resolver_sample ]; then
 	arch=$(echo $(file -e elf ./errors_resolver_sample | cut -d',' -f2 | tr - _))
 else
 	arch=$(uname -m)
 fi
+
+echo -e "\nTest run:"
+
 if [[ $arch = $(uname -m) ]];
 then
 	./errors_resolver_sample
 else
-	echo detected architecture $arch
-	qemu-${arch,,} -L /usr/"${CC%-*}" ./errors_resolver_sample
+	echo detected architecture $arch, machine $($CC -dumpmachine)
+	qemu-${arch,,} -L /usr/"$($CC -dumpmachine)" ./errors_resolver_sample
 fi
+
+echo -e "\nFinal result:\n"
+showv CPPFLAGS
+showv LDFLAGS
+showv LDLIBS
+echo "make -B -f /dev/null errors_resolver_sample "
+showv LD_LIBRARY_PATH
+echo ./errors_resolver_sample
