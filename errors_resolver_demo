@@ -7,7 +7,7 @@ export LDLIBS
 CPPFLAGS=-Wall
 CTAGS="-I __THROW,__THROWNL,__nonnull+"
 CTAGS+=" --exclude=etip.h" # avoid exit collision
-#CTAGS+=" --exclude=mysql"
+CTAGS+=" --exclude=mysql" # avoid mysql/my_pthread.h collision
 export CTAGS
 # Credit: http://stackoverflow.com/questions/1632633/ctags-does-not-parse-stdio-h-properly#1632633
 
@@ -19,10 +19,13 @@ export lib_path=$($CC -Xlinker --verbose  2>/dev/null | grep SEARCH | sed 's/SEA
 
 showv()
 {
-	val=$(eval "echo \$${1}"); echo -n "$1='$val' "
+	val=$(eval "echo \$${1}"); echo -n "$1='$val' $2"
 }
 
-showv lib_path
+echo "Initial invironment"
+showv CC $'\n'
+showv lib_path $'\n'
+echo
 
 make -s -B -C sub
 #make -B -f /dev/null errors_resolver_sample > /dev/null

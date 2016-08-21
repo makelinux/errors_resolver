@@ -78,6 +78,7 @@ def parse_err(solutions, line, error, solution_func):
 def parse_line_for_errors(l):
     s = []
     #log(parse_error(l, r'.*warning: implicit declaration of function ‘(.*)’.*', 'declaration'))
+    parse_err(s, l, r'.*error: unknown type name ‘(.*)’.*', search_declarations)
     parse_err(s, l, r'.*warning: implicit declaration of function ‘(.*)’.*', search_declarations)
     parse_err(s, l, r'.*warning: incompatible implicit declaration of built-in function ‘(.*)’.*', search_declarations)
     parse_err(s, l, r'.*error: ‘(.*)’ undeclared.*', search_declarations)
@@ -85,6 +86,7 @@ def parse_line_for_errors(l):
     parse_err(s, l, r'.*ld: cannot find -l(.*)', search_lib_path)
     parse_err(s, l, r'.*warning: lib(.*?)\..*, needed by .*, not found .*', search_lib_path)
     parse_err(s, l, r'configure:\d+: error: (\w+) is missing', search_lib_path)
+    #TODO:
     #error while loading shared libraries: (.*): cannot open shared object file
     #s/.*fatal error: (.*): No such file or directory.*/apt-file search $1/ && print;
     # --with-libiconv
