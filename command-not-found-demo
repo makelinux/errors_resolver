@@ -1,0 +1,22 @@
+#!/bin/bash
+
+packages=
+
+fff()
+{
+	echo | gfortran
+	echo | prolog
+	echo | irc
+}
+
+echo "It's supposed that some packages are not installed and some command are not found:"
+fff
+echo
+
+echo "The output of errors_resolver.py:"
+fff 2>&1 | ./errors_resolver.py
+echo
+
+echo "Result:"
+eval $(fff 2>&1 | ./errors_resolver.py)
+echo "This packages provide above not found commands: $packages"
