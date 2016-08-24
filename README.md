@@ -10,13 +10,19 @@ Solution:
 
 CPPFLAGS+=' -include stdio.h';
 
-## Run demo:
+## Demonstrations:
+
+### Resolving compilation configuration errors:
 
 ./errors_resolver_demo
 
-## Run demo with cross compiler:
+## Run above demo with cross compiler:
 
 CC=arm-linux-gnueabi-gcc ./errors_resolver_demo
+
+## Demo for resolving not found commands in subroutine with helper /usr/lib/command-not-found
+
+./command-not-found-demo
 
 ## errors_resolver.py
 
@@ -45,7 +51,7 @@ Uses tools for searing of missing components:
 * ctags, nm, find
 
 ## To to list:
-* Analize more ./configure errors.
+* Analyze more ./configure errors.
 
 
 You are welcome to request additional features in form of erroneous sample source code (see errors_resolver_sample.c), sample errors and solutions.

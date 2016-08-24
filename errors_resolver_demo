@@ -6,8 +6,9 @@ export LDLIBS
 
 CPPFLAGS=-Wall
 CTAGS="-I __THROW,__THROWNL,__nonnull+"
-CTAGS+=" --exclude=etip.h" # avoid exit collision
+CTAGS+=" --exclude=etip.h" # avoid 'exit' collision
 CTAGS+=" --exclude=mysql" # avoid mysql/my_pthread.h collision
+CTAGS+=" --exclude=pthreadtypes.h" # favor pthread.h
 export CTAGS
 # Credit: http://stackoverflow.com/questions/1632633/ctags-does-not-parse-stdio-h-properly#1632633
 
@@ -22,30 +23,29 @@ showv()
 	val=$(eval "echo \$${1}"); echo -n "$1='$val' $2"
 }
 
-echo "Initial invironment"
+echo -e "Initial invironment\n"
 showv CC $'\n'
+showv includedir $'\n'
 showv lib_path $'\n'
-echo
 
 make -s -B -C sub
-#make -B -f /dev/null errors_resolver_sample > /dev/null
+echo
 
-echo pass 1: resolve headers
+echo -e "pass 1: resolve headers\n"
 eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py 2> /dev/null | tee out.tmp)"
 cat out.tmp
 echo
 
-echo pass 2: resolve libraries
+echo -e "pass 2: resolve libraries\n"
 eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py 2> /dev/null | tee out.tmp)"
 cat out.tmp
 echo
 
-echo pass 3: resolve library paths
+echo -e "pass 3: resolve library paths\n"
 eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py 2> /dev/null | tee out.tmp)"
 cat out.tmp
-echo
 
-echo Final compilation:
+echo -e "\nFinal compilation:\n"
 make -B -f /dev/null errors_resolver_sample
 
 if [ -e ./errors_resolver_sample ]; then
@@ -54,7 +54,7 @@ else
 	arch=$(uname -m)
 fi
 
-echo -e "\nTest run:"
+echo -e "\nTest run:\n"
 
 if [[ $arch = $(uname -m) ]];
 then
