@@ -6,6 +6,7 @@
 #include <string.h>
 #include <errno.h>
 #endif
+#include <sub2.h>
 
 int main(void)
 {

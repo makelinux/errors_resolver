@@ -48,6 +48,11 @@ showv lib_path $'\n'
 make -s -B -C sub
 echo
 
+echo -e "pass 1: resolve headers paths\n"
+eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py 2> /dev/null | tee out.tmp)"
+cat out.tmp
+echo
+
 echo -e "pass 1: resolve headers\n"
 eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py 2> /dev/null | tee out.tmp)"
 cat out.tmp

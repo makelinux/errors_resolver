@@ -78,6 +78,28 @@ def search_command(command):
             add(res, "packages+=' %s';" % m.group(1))
     return res
 
+def search_file(f):
+    # apt-file search $1
+    log(f)
+    res = []
+    #find_opt = ''
+    #for e in os.environ.get('exclude_path', '').split(':'):
+    #    find_opt += ' ! -path ' + e
+    #log(find_opt)
+    for p in os.environ.get('file_search_path', '.').split(':'):
+        log(p)
+        log('find ' + p + ' ' + os.environ.get('find_flags', '') + ' -name .pc -prune -o -path */' + f + ' -print')
+        proc = subprocess.Popen('find ' + p + ' ' + os.environ.get('find_flags', '') + ' -name .pc -prune -o -path "*/' + f + '" -print',
+            shell=True, stdout=subprocess.PIPE)
+        for line in proc.stdout:
+            log(line)
+            m = re.match('(.*)/' + f, line)
+            if m:
+                log('{'+ m.group(1) + '}')
+                add(res, "CPPFLAGS+=' -I%s';" % m.group(1))
+    return res
+
+
 def need_package(package):
     #return 'sudo apt-get install ' + package
     return "packages+=' %s'" % package
@@ -111,6 +133,7 @@ def parse_err(solutions, line, error, solution_func):
 
 def parse_line_for_errors(l):
     s = []
+    parse_err(s, l, 'fatal error: ([^:^ ]+): No such file or directory', search_file)
     parse_err(s, l, 'error: unknown type name ‘(.*)’.*', search_declarations)
     parse_err(s, l, 'warning: implicit declaration of function ‘(.*)’.*', search_declarations)
     parse_err(s, l, 'warning: incompatible implicit declaration of built-in function ‘(.*)’.*', search_declarations)
@@ -126,7 +149,6 @@ def parse_line_for_errors(l):
     #parse_err(s, l, '(\w*)', need_package)
     #TODO:
     #error while loading shared libraries: (.*): cannot open shared object file
-    #s/.*fatal error: (.*): No such file or directory.*/apt-file search $1/ && print;
     # --with-libiconv
     return s
 
