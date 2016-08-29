@@ -16,9 +16,14 @@ CPPFLAGS+=' -include stdio.h';
 
 ./errors_resolver_demo
 
+PS: remove files from previous test if need
+rm errors_resolver_sample prototype.tags sub/libsub.so system.tags
+
 ## Run above demo with cross compiler:
 
 CC=arm-linux-gnueabi-gcc ./errors_resolver_demo
+
+This demo was tested on Ubuntu, where gcc-arm-linux-gnueabi is installed.
 
 ## Demo for resolving not found commands in subroutine with helper /usr/lib/command-not-found
 
@@ -28,12 +33,12 @@ CC=arm-linux-gnueabi-gcc ./errors_resolver_demo
 
 ### Input:
 
-Compilation errors as output of compilation
+Compilation and system errors.
+Output of compilation or execution log with errors can passed to output of resolver.
 
 ### Output:
 
 Fixes to solve compilation errors in form of modification of environment variables.
-
 
 ## Features:
 
@@ -42,13 +47,15 @@ Analyzes warnings and errors:
 * undeclared symbol
 * undefined symbol
 * library not found or missing
-Demo support cross compiler
+* command not fount
+Demo supports cross compiler
 
 Provides modification of standard environment variables:
 * CPPFLAGS, LDFLAGS, LDLIBS, LD_LIBRARY_PATH
 
 Uses tools for searing of missing components:
 * ctags, nm, find
+* /usr/lib/command-not-found
 
 ## To to list:
 * Analyze more ./configure errors.

@@ -1,8 +1,19 @@
 #!/bin/bash
 
+if ! python --help >  /dev/null; then
+	echo please install python
+	exit 1
+fi
+
+if ! ctags --help > /dev/null; then
+	echo please install ctags
+	exit 1
+fi
+
 export CPPFLAGS
 export LDFLAGS=
 export LDLIBS
+export LD_LIBRARY_PATH
 
 CPPFLAGS=-Wall
 CTAGS="-I __THROW,__THROWNL,__nonnull+"

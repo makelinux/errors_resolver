@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [[ ! -x /usr/lib/command-not-found ]]; then
+	echo "This demo requires utility /usr/lib/command-not-found, https://launchpad.net/command-not-found"
+	exit 1
+fi
+
 packages=
 
 fff()
