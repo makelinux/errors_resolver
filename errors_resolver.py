@@ -65,7 +65,6 @@ def search_command(command):
     log(command)
     proc = subprocess.Popen('/usr/lib/command-not-found ' + command + ' 2>&1 ',
         shell=True, stdout=subprocess.PIPE)
-    #return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.readline().rstrip('\n');
     res = []
     for line in proc.stdout:
         log(line)

@@ -23,7 +23,7 @@ rm errors_resolver_sample prototype.tags sub/libsub.so system.tags
 
 CC=arm-linux-gnueabi-gcc ./errors_resolver_demo
 
-This demo was tested on Ubuntu, where gcc-arm-linux-gnueabi is installed.
+This demo was tested on Ubuntu, where gcc-arm-linux-gnueabi and qemu-user are installed.
 
 ## Demo for resolving not found commands in subroutine with helper /usr/lib/command-not-found
 
