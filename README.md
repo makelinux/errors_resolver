@@ -27,7 +27,10 @@ CC=arm-linux-gnueabi-gcc ./errors_resolver_demo
 
 This demo was tested on Ubuntu, where gcc-arm-linux-gnueabi and qemu-user are installed.
 
-## Demo for resolving not found commands in subroutine with helper /usr/lib/command-not-found
+## Demo of resolving error 'command not found'
+
+Helper /usr/lib/command-not-found resolves the error in interactive shell.
+To resolve errors in subroutine run:
 
 ./command-not-found-demo
 
@@ -35,7 +38,7 @@ This demo was tested on Ubuntu, where gcc-arm-linux-gnueabi and qemu-user are in
 
 ./errors_resolver.py < [errors.log](https://github.com/makelinux/errors_resolver/blob/master/errors.log)
 
-## [errors_resolver.py](https://github.com/makelinux/errors_resolver/blob/master/errors_resolver.py)
+## errors_resolver.py - core application
 
 ### Input:
 
@@ -44,7 +47,7 @@ Output of compilation or execution log with errors can passed to output of resol
 
 ### Output:
 
-Fixes to solve compilation errors in form of modification of environment variables.
+Fixes or recommendations to solve errors in form of modification of environment variables or shell commands.
 
 ## Features:
 
@@ -54,6 +57,8 @@ Analyzes warnings and errors:
 * undefined symbol
 * library not found or missing
 * command not fount
+* decodes numeric system errno
+* catches some disk errors
 Demo supports cross compiler
 
 Provides modification of standard environment variables:
