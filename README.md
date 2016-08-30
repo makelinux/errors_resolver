@@ -2,15 +2,15 @@
 
 The mission of Errors resolver is to provide resolutions or recommendations for standard errors. For example it analyzes some build errors caused by missing components, searches the missing components in system environment and provides a location to missing components.
 
-For example try this:
+For example:
 
-echo "warning: incompatible implicit declaration of built-in function ‘printf’" | ./errors_resolver.py
+echo "warning: implicit declaration of function ‘pthread_create’" | ./errors_resolver.py
 
-Solution:
+Output with solution:
 
-CPPFLAGS+=' -include stdio.h';
+CPPFLAGS+=' -include pthread.h';
 
-make program uses environment variable CPPFLAGS for compilation.
+In this example errors_resolver.py searches tags and provides missing header file.
 
 ## Demonstrations:
 
