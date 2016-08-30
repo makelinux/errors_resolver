@@ -146,10 +146,12 @@ def err2cmd(solutions, line, error, command):
             add(solutions, command)
 def errno(n):
     # TODO: provide context
-    return os.strerror(abs(int(n)))
+    return "echo " + os.strerror(abs(int(n)))
 
 def parse_line_for_errors(l):
     s = []
+
+    # Compilation and linkage errors:
     parse_err(s, l, '/usr/lib/(command-not-found): No such file or directory', need_package)
     parse_err(s, l, 'fatal error: ([^:^ ]+): No such file or directory', search_file)
     parse_err(s, l, 'error: unknown type name ‘(.*)’.*', search_declarations)
@@ -166,15 +168,16 @@ def parse_line_for_errors(l):
     parse_err(s, l, 'error[= ](-?\d+)', errno)
     parse_err(s, l, 'errno[= ](-?\d+)', errno)
 
-    # Storage errors
+    # Storage errors in kernel log:
     err2cmd(s, l, '\((.*?)\): warning: mounting unchecked fs, running e2fsck is recommended', 'sudo e2fsck -n /dev/%s')
     err2cmd(s, l, 'I/O error, dev (.*?), sector', 'sudo smartctl -t long /dev/%s')
     err2cmd(s, l, 'Buffer I/O error on device (.*?),', 'sudo smartctl -t long /dev/%s')
     err2cmd(s, l, 'Emask .* \(media error\)', 'echo please check disk media with smartctl -t long')
     err2cmd(s, l, 'SError:.*(10B8B|Dispar)', 'echo please check SATA cables')
 
-    err2cmd(s, l, 'authentication failure.*user=root', 'echo somebody tries to hack you')
-    err2cmd(s, l, 'Failed password for root', 'echo somebody tries to hack you')
+    # /var/log/auth.log errors:
+    err2cmd(s, l, 'authentication failure.*user=root', 'echo somebody tries to hack you, please run IDS')
+    err2cmd(s, l, 'Failed password for root', 'echo somebody tries to hack you, please run IDS')
 
     log(s)
     #TODO:
