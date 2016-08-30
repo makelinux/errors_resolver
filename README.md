@@ -1,6 +1,6 @@
 # Errors resolver
 
-The mission of Errors resolver is to provide resolutions for standard errors. Current implementation analyzes some build errors caused by missing components, searches the missing components in system environment and provides a resolution with missing components.
+The mission of Errors resolver is to provide resolutions or recommendations for standard errors. For example it analyzes some build errors caused by missing components, searches the missing components in system environment and provides a location to missing components.
 
 For example try this:
 
@@ -9,6 +9,8 @@ echo "warning: incompatible implicit declaration of built-in function â€˜printfâ
 Solution:
 
 CPPFLAGS+=' -include stdio.h';
+
+make program uses environment variable CPPFLAGS for compilation.
 
 ## Demonstrations:
 
@@ -29,7 +31,11 @@ This demo was tested on Ubuntu, where gcc-arm-linux-gnueabi and qemu-user are in
 
 ./command-not-found-demo
 
-## errors_resolver.py
+## Resolving various errors from a log file:
+
+./errors_resolver.py < [errors.log](https://github.com/makelinux/errors_resolver/blob/master/errors.log)
+
+## [errors_resolver.py](https://github.com/makelinux/errors_resolver/blob/master/errors_resolver.py)
 
 ### Input:
 
@@ -59,7 +65,6 @@ Uses tools for searing of missing components:
 
 ## To to list:
 * Analyze more ./configure errors.
-
 
 You are welcome to request additional features in form of erroneous sample source code (see errors_resolver_sample.c), sample errors and solutions.
 

@@ -1,0 +1,24 @@
+Expected from kernel log, dmesg:
+
+EXT4-fs (sda1): warning: mounting unchecked fs, running e2fsck is recommended
+
+end_request: I/O error, dev sdb, sector 123456
+
+Buffer I/O error on device sda1, logical block 123456
+
+ata2.00: cmd 60/20:00:00:00:00/00:00:00:00:00/40 tag 0 ncq 16384 in
+	 res 51/40:0f:11:00:00/1b:00:00:00:00/40 Emask 0x409 (media error) <F>
+
+SError: { 10B8B Dispar }
+
+Expected from /var/log/auth.log:
+
+pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=116.31.116.11  user=root
+Failed password for root from 116.31.116.11 port 16009 ssh2
+
+System errors in numeric form:
+
+error -1
+error=2
+errno=-3
+errno=4

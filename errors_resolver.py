@@ -5,9 +5,10 @@ from __future__ import print_function
 from pprint import pprint
 import fileinput, re, subprocess, os, sys, inspect
 from subprocess import check_output
+from errno import errorcode
 
 lib_path = os.environ.get('lib_path', '').replace(':', ' ')
-verbose = int(os.environ.get('VERBOSE', '0'))
+verbose = int(os.environ.get('verbose', '0'))
 
 def log(*args, **kwargs):
     if verbose:
@@ -96,7 +97,11 @@ def search_file(f):
             m = re.match('(.*)/' + f, line)
             if m:
                 log('{'+ m.group(1) + '}')
-                add(res, "CPPFLAGS+=' -I%s';" % m.group(1))
+                dir = m.group(1)
+                for subst in os.environ.get('substitute_paths',':').split(':'):
+                    if os.environ.get(subst):
+                        dir = dir.replace(os.environ.get(subst), '${%s}' % subst)
+                add(res, 'CPPFLAGS+=" -I%s";' % dir)
     return res
 
 
@@ -131,33 +136,58 @@ def parse_err(solutions, line, error, solution_func):
         log('error=' + error)
         add(solutions, solution_func(m.group(1)))
 
+def err2cmd(solutions, line, error, command):
+    if '%s' in command:
+        m = re.match('.*?' + error, line)
+        if m is not None:
+            add(solutions, command % m.group(1))
+    else:
+        if re.match('.*?' + error, line):
+            add(solutions, command)
+def errno(n):
+    # TODO: provide context
+    return os.strerror(abs(int(n)))
+
 def parse_line_for_errors(l):
     s = []
+    parse_err(s, l, '/usr/lib/(command-not-found): No such file or directory', need_package)
     parse_err(s, l, 'fatal error: ([^:^ ]+): No such file or directory', search_file)
     parse_err(s, l, 'error: unknown type name ‘(.*)’.*', search_declarations)
     parse_err(s, l, 'warning: implicit declaration of function ‘(.*)’.*', search_declarations)
     parse_err(s, l, 'warning: incompatible implicit declaration of built-in function ‘(.*)’.*', search_declarations)
     parse_err(s, l, 'error: ‘(.*)’ undeclared.*', search_declarations)
     parse_err(s, l, 'undefined reference to `(.*)\'.*', search_libraries)
+    parse_err(s, l, 'configure:\d+: error: (\w+) is missing', search_lib_path)
     parse_err(s, l, 'ld: cannot find -l(.*)', search_lib_path)
     parse_err(s, l, 'warning: lib(.*?)\..*, needed by .*, not found .*', search_lib_path)
-    parse_err(s, l, 'configure:\d+: error: (\w+) is missing', search_lib_path)
+    parse_err(s, l, 'error while loading shared libraries: lib(.*?)\..*: cannot open shared object file', search_lib_path)
     parse_err(s, l, '([^:^ ]+): command not found', search_command)
-    parse_err(s, l, '([^:^ ]+): not found', search_command)
-    parse_err(s, l, '/usr/lib/(command-not-found): No such file or directory', need_package)
-    # The program '(.*)' can be found in the following packages:
-    #parse_err(s, l, '(\w*)', need_package)
+
+    parse_err(s, l, 'error[= ](-?\d+)', errno)
+    parse_err(s, l, 'errno[= ](-?\d+)', errno)
+
+    # Storage errors
+    err2cmd(s, l, '\((.*?)\): warning: mounting unchecked fs, running e2fsck is recommended', 'sudo e2fsck -n /dev/%s')
+    err2cmd(s, l, 'I/O error, dev (.*?), sector', 'sudo smartctl -t long /dev/%s')
+    err2cmd(s, l, 'Buffer I/O error on device (.*?),', 'sudo smartctl -t long /dev/%s')
+    err2cmd(s, l, 'Emask .* \(media error\)', 'echo please check disk media with smartctl -t long')
+    err2cmd(s, l, 'SError:.*(10B8B|Dispar)', 'echo please check SATA cables')
+
+    err2cmd(s, l, 'authentication failure.*user=root', 'echo somebody tries to hack you')
+    err2cmd(s, l, 'Failed password for root', 'echo somebody tries to hack you')
+
+    log(s)
     #TODO:
-    #error while loading shared libraries: (.*): cannot open shared object file
     # --with-libiconv
     return s
 
 def parse_fileinput():
     solutions = []
     for line in fileinput.input():
-        log('line=' + line)
-        for s in parse_line_for_errors(line):
-            add(solutions, s)
+        if line != '\n':
+            log('line=' + line)
+            for s in parse_line_for_errors(line):
+                add(solutions, s)
     for s in solutions:
         print(s)
 
