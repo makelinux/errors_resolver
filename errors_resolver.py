@@ -201,6 +201,9 @@ def parse_line_for_errors(l):
     # /var/log/auth.log errors:
     err2cmd(s, l, '(Failed password for |authentication failure.*user=)root', 'echo somebody tries to hack you, please run IDS')
 
+    #  /var/sys/syslog errors:
+    err2cmd(s, l, 'mcelog: (Please check your system cooling.)', 'echo %s')
+
     log(s)
     #TODO:
     # --with-libiconv
