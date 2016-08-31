@@ -2,7 +2,7 @@ Expected from kernel log, dmesg:
 
 EXT4-fs (sda1): warning: mounting unchecked fs, running e2fsck is recommended
 
-end_request: I/O error, dev sdb, sector 123456
+end_request: I/O error, dev sda, sector 123456
 
 Buffer I/O error on device sda1, logical block 123456
 

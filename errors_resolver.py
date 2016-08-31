@@ -144,6 +144,7 @@ def err2cmd(solutions, line, error, command):
     else:
         if re.match('.*?' + error, line):
             add(solutions, command)
+
 def errno(n):
     # TODO: provide context
     return "echo " + os.strerror(abs(int(n)))
@@ -176,8 +177,7 @@ def parse_line_for_errors(l):
     err2cmd(s, l, 'SError:.*(10B8B|Dispar)', 'echo please check SATA cables')
 
     # /var/log/auth.log errors:
-    err2cmd(s, l, 'authentication failure.*user=root', 'echo somebody tries to hack you, please run IDS')
-    err2cmd(s, l, 'Failed password for root', 'echo somebody tries to hack you, please run IDS')
+    err2cmd(s, l, '(Failed password for |authentication failure.*user=)root', 'echo somebody tries to hack you, please run IDS')
 
     log(s)
     #TODO:
