@@ -41,9 +41,14 @@ fatal()
 }
 
 echo -e "Initial invironment\n"
+# Feature substitute_paths allows to substitute long paths to shortcut variables.
+export substitute_paths=d1:d2 d1=some/long/path d2=sub
 showv CC $'\n'
 showv includedir $'\n'
-showv lib_path $'\n'
+showv obj_path $'\n'
+showv substitute_paths
+showv d1
+showv d2 $'\n'
 
 make -s -B -C sub
 echo
