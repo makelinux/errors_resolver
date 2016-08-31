@@ -229,11 +229,12 @@ if not os.path.isfile('tags'):
 if not os.path.isfile('system.tags'):
     includedir = os.environ.get('includedir', '/usr/include')
     log('Building system.tags for ' + includedir)
-    os.system('ctags --sort=no -o system.tags --recurse --c-kinds=+ep -I __THROW,__THROWNL,__nonnull+ ' + os.environ.get('includedir', '/usr/include'))
+    os.system('ctags --sort=no -o system.tags --recurse --sort=no --c-kinds=+ep -I __THROW,__THROWNL,__nonnull + ' +
+            os.environ.get('includedir', '/usr/include'))
 
 if not os.path.isfile('prototype.tags'):
     # TODO: optional current dir (-C ...)
     log('Building prototype.tags')
-    os.system('ctags -o prototype.tags --recurse --c-kinds=p . ')
+    os.system('ctags -o prototype.tags --recurse --sort=no --c-kinds=p ' + src_path)
 
 parse_fileinput()
