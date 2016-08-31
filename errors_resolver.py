@@ -7,7 +7,8 @@ import fileinput, re, subprocess, os, sys, inspect
 from subprocess import check_output
 from errno import errorcode
 
-lib_path = os.environ.get('lib_path', '').replace(':', ' ')
+obj_path = os.environ.get('obj_path', '.').replace(':', ' ')
+src_path = os.environ.get('src_path', '.').replace(':', ' ')
 verbose = int(os.environ.get('verbose', '0'))
 
 def log(*args, **kwargs):
@@ -15,24 +16,49 @@ def log(*args, **kwargs):
         print(inspect.stack()[1][3], str(*args).rstrip(), file=sys.stderr, **kwargs)
     pass
 
+def substitute_paths(path):
+    for subst in os.environ.get('substitute_paths',':').split(':'):
+        if os.environ.get(subst):
+            path = path.replace(os.environ.get(subst).rstrip('/') +'/', '${%s}/' % subst)
+    return path
+
 def popen_readline(cmd):
     log(cmd)
     #return check_output(cmd, shell=True)
     return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.readline().rstrip('\n');
 
-def search_libraries(undefined):
+def search_definitions_src(undefined):
+    for src in os.environ.get('src_path', '.').split(':'):
+        proc = subprocess.Popen('grep --word-regexp ^' + undefined + ' ' + src + '/tags | cut --fields=2',
+            shell=True, stdout=subprocess.PIPE)
+    ret = []
+    for src in proc.stdout:
+        src = substitute_paths(src.rstrip())
+        log('proc src=' + src)
+        add(ret, "LDLIBS+='%s';" % (os.path.splitext(src)[0]+'.o'))
+        break
+    if ret:
+        return ret
+    return "# unresolved " + undefined
+
+def search_definitions_lib(undefined):
     # TODO
-    log(lib_path)
-    line = popen_readline(
-            'nm --demangle --defined-only --print-file-name $(find ' + lib_path + ' -name "lib*.so" -o -name "lib*.so.*") 2> /dev/null'
-            '| grep --word-regexp ".* T ' + undefined + '" | cut --fields=1 --delimiter=":"')
+    log(obj_path)
+    line = popen_readline('grep --word-regexp ".* T ' + undefined + '\>" symbols.list | cut --fields=1 --delimiter=":"')
     m = re.match(r'.*\/lib(.*)\.so', line)
     if m is not None:
         return "LDLIBS+=' -l %s';" % m.group(1)
 
+def search_definitions(undefined):
+    ret = []
+    add(ret, search_definitions_lib(undefined))
+    if ret == []:
+        add(ret, search_definitions_src(undefined))
+    return ret
+
 def search_lib_path(lib):
-    log(lib_path)
-    line = popen_readline('find ' + lib_path + ' -name "lib' + lib + '.so" -printf "%P\n" ')
+    log(obj_path)
+    line = popen_readline('find ' + obj_path + ' -name "lib' + lib + '.so" -printf "%P\n" 2> /dev/null')
     log(line)
     m = re.match(r'(.*)\/lib.*\.so', line)
     if m is not None:
@@ -97,11 +123,7 @@ def search_file(f):
             m = re.match('(.*)/' + f, line)
             if m:
                 log('{'+ m.group(1) + '}')
-                dir = m.group(1)
-                for subst in os.environ.get('substitute_paths',':').split(':'):
-                    if os.environ.get(subst):
-                        dir = dir.replace(os.environ.get(subst), '${%s}' % subst)
-                add(res, 'CPPFLAGS+=" -I%s";' % dir)
+                add(res, 'CPPFLAGS+=" -I%s";' % substitute_paths(m.group(1)))
     return res
 
 
@@ -115,7 +137,7 @@ def add(l1, l2):
             if not e in l1:
                 l1.append(e)
     else:
-        if not l2 in l1:
+        if l2 and not l2 in l1:
             l1.append(l2)
 
 # TODO: new concept: parse errors to dict
@@ -159,7 +181,7 @@ def parse_line_for_errors(l):
     parse_err(s, l, 'warning: implicit declaration of function ‘(.*)’.*', search_declarations)
     parse_err(s, l, 'warning: incompatible implicit declaration of built-in function ‘(.*)’.*', search_declarations)
     parse_err(s, l, 'error: ‘(.*)’ undeclared.*', search_declarations)
-    parse_err(s, l, 'undefined reference to `(.*)\'.*', search_libraries)
+    parse_err(s, l, 'undefined reference to `(.*)\'.*', search_definitions)
     parse_err(s, l, 'configure:\d+: error: (\w+) is missing', search_lib_path)
     parse_err(s, l, 'ld: cannot find -l(.*)', search_lib_path)
     parse_err(s, l, 'warning: lib(.*?)\..*, needed by .*, not found .*', search_lib_path)
@@ -193,6 +215,10 @@ def parse_fileinput():
                 add(solutions, s)
     for s in solutions:
         print(s)
+
+if not os.path.isfile('symbols.list'):
+    os.system('nm --demangle --defined-only --print-file-name $(find ' + obj_path +
+        ' -name "lib*.so" -o -name "lib*.so.*" -o -name *.o) 2> /dev/null > symbols.list');
 
 if not os.path.isfile('system.tags'):
     includedir = os.environ.get('includedir', '/usr/include')

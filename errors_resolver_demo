@@ -27,7 +27,7 @@ export includedir=/usr/include
 
 [ -z "$CC" ] && CC=gcc
 eval $(echo $($CC -v 2>&1) | grep -o 'includedir=\S*')
-export lib_path=$($CC -Xlinker --verbose  2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1:/g'  | grep -vE '^$'):.
+export obj_path=$($CC -Xlinker --verbose  2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1:/g'  | grep -vE '^$'):.
 
 showv()
 {
