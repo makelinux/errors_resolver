@@ -223,6 +223,9 @@ if not os.path.isfile('symbols.list'):
     os.system('nm --demangle --defined-only --print-file-name $(find ' + obj_path +
         ' -name "lib*.so" -o -name "lib*.so.*" -o -name *.o) 2> /dev/null > symbols.list');
 
+if not os.path.isfile('tags'):
+    os.system('ctags --recurse --sort=no ' + src_path)
+
 if not os.path.isfile('system.tags'):
     includedir = os.environ.get('includedir', '/usr/include')
     log('Building system.tags for ' + includedir)
