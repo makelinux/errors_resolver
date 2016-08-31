@@ -34,6 +34,10 @@ To resolve errors in subroutine run:
 
 ./command-not-found-demo
 
+## Analyzing system logs
+
+sudo ./errors_resolver.py /var/log/*log
+
 ## Resolving various errors from a log file:
 
 ./errors_resolver.py < [errors.log](https://github.com/makelinux/errors_resolver/blob/master/errors.log)
