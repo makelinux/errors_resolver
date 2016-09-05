@@ -187,6 +187,10 @@ def parse_line_for_errors(l):
     parse_err(s, l, 'warning: lib(.*?)\..*, needed by .*, not found .*', search_lib_path)
     parse_err(s, l, 'error while loading shared libraries: lib(.*?)\..*: cannot open shared object file', search_lib_path)
     parse_err(s, l, '([^:^ ]+): command not found', search_command)
+    # ld: cannot find sub/sub.o: No such file or directory
+    # cc: error: sub/sub.o: No such file or directory
+    #TODO:
+    # --with-libiconv
 
     parse_err(s, l, 'error[= ](-?\d+)', errno)
     parse_err(s, l, 'errno[= ](-?\d+)', errno)
@@ -208,8 +212,6 @@ def parse_line_for_errors(l):
     err2cmd(s, l, 'ImportError: No module named (.*)', 'sudo pip install %s')
 
     log(s)
-    #TODO:
-    # --with-libiconv
     return s
 
 def parse_fileinput():
