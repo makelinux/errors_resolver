@@ -192,6 +192,7 @@ def parse_line_for_errors(l):
     parse_err(s, l, 'errno[= ](-?\d+)', errno)
 
     # Storage errors in kernel log:
+    # try to run e2fsck without unmounting in read only mode
     err2cmd(s, l, '\((.*?)\): warning: mounting unchecked fs, running e2fsck is recommended', 'sudo e2fsck -n /dev/%s')
     err2cmd(s, l, 'I/O error, dev (.*?), sector', 'sudo smartctl -t long /dev/%s')
     err2cmd(s, l, 'Buffer I/O error on device (.*?),', 'sudo smartctl -t long /dev/%s')
