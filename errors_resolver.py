@@ -35,7 +35,7 @@ def search_definitions_src(undefined):
     for src in proc.stdout:
         src = substitute_paths(src.rstrip())
         log('proc src=' + src)
-        add(ret, "LDLIBS+='%s';" % (os.path.splitext(src)[0]+'.o'))
+        add(ret, "LDLIBS+=' %s';" % (os.path.splitext(src)[0]+'.o'))
         break
     if ret:
         return ret
@@ -46,7 +46,7 @@ def search_definitions_lib(undefined):
     log(obj_path)
     line = popen_readline('grep --word-regexp ".* T ' + undefined + '\>" symbols.list | cut --fields=1 --delimiter=":"')
     m = re.match(r'.*\/lib(.*)\.so', line)
-    if m is not None:
+    if m:
         return "LDLIBS+=' -l %s';" % m.group(1)
 
 def search_definitions(undefined):
