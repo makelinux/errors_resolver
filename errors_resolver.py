@@ -205,6 +205,8 @@ def parse_line_for_errors(l):
     #  /var/sys/syslog errors:
     err2cmd(s, l, 'mcelog: (Please check your system cooling.)', 'echo %s')
 
+    err2cmd(s, l, 'ImportError: No module named (.*)', 'sudo pip install %s')
+
     log(s)
     #TODO:
     # --with-libiconv
