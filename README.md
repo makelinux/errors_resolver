@@ -75,7 +75,7 @@ Uses tools for searing of missing components:
 
 ## Regression test:
 
-* (./errors_resolver_demo && CC=arm-linux-gnueabi-gcc ./errors_resolver_demo && ./command-not-found-demo && echo PASSED) > regression_test.log 2>&1 && ./errors_resolver.py errors.log && echo PASSED || (tail regression_test.log; false)
+* (./errors_resolver_demo && CC=arm-linux-gnueabi-gcc ./errors_resolver_demo && ./command-not-found-demo && ./errors_resolver.py errors.log && echo PASSED) > regression_test.log 2>&1 && echo PASSED || (tail regression_test.log; false)
 
 ## To to list:
 * Analyze more ./configure errors.

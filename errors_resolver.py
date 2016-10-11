@@ -90,10 +90,10 @@ def search_declarations(undeclared):
     ret = []
     for line in proc.stdout:
         log('proc line=' + line)
-        line = line.rstrip().replace('/usr/include/', '') # TODO: generalize with includedir
+        line = line.rstrip().replace('/usr/include/', '') # TODO: generalize with includedir and CPATH
         #ret += "# for %s:\n" % undeclared
         add(ret, "CPPFLAGS+=' -include %s';" % line)
-        # for demo the first risult is enogth
+        # for demo the first result is enough
         break
     if ret:
         return ret
@@ -197,18 +197,24 @@ def parse_line_for_errors(l):
     parse_err(s, l, 'ld: cannot find -l(.*)', search_lib_path)
     parse_err(s, l, 'warning: lib(.*?)\..*, needed by .*, not found .*', search_lib_path)
     parse_err(s, l, 'error while loading shared libraries: lib(.*?)\..*: cannot open shared object file', search_lib_path)
-    parse_err(s, l, '([^:^ ]+): command not found', search_command)
-    parse_err(s, l, 'failed to run (.*?):', search_command)
-    #parse_err(s, l, ': ([^:^ ]+): not found', search_command)
     # ld: cannot find sub/sub.o: No such file or directory
     # cc: error: sub/sub.o: No such file or directory
     #TODO:
     # --with-libiconv
 
+    # Uninstalled packages:
+    parse_err(s, l, '([^:^ ]+): command not found', search_command)
+    parse_err(s, l, 'failed to run (.*?):', search_command)
+    #parse_err(s, l, ': ([^:^ ]+): not found', search_command)
+    err2cmd(s, l, 'ImportError: No module named (.*)', 'sudo pip install %s')
+
+    # Decoding errno
     if re.match('make: .* Error 1', l) is None:
         parse_err(s, l, 'error[= ](-?\d+)', errno)
     parse_err(s, l, 'errno[= ](-?\d+)', errno)
     parse_err(s, l, 'return code = (-?\d+)', errno)
+
+    # Investigating system logs:
 
     # Storage errors in kernel log:
     # try to run e2fsck without unmounting in read only mode
@@ -217,14 +223,10 @@ def parse_line_for_errors(l):
     err2cmd(s, l, 'Buffer I/O error on device (.*?),', 'sudo smartctl -t long /dev/%s')
     err2cmd(s, l, 'Emask .* \(media error\)', 'echo please check disk media with smartctl -t long')
     err2cmd(s, l, 'SError:.*(10B8B|Dispar)', 'echo please check SATA cables')
-
     # /var/log/auth.log errors:
     err2cmd(s, l, '(Failed password for |authentication failure.*user=)root', 'echo somebody tries to hack you, please run IDS')
-
-    #  /var/sys/syslog errors:
+    # /var/log/syslog errors:
     err2cmd(s, l, 'mcelog: (Please check your system cooling.)', 'echo %s')
-
-    err2cmd(s, l, 'ImportError: No module named (.*)', 'sudo pip install %s')
 
     log(s)
     return s
