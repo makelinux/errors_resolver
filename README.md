@@ -66,7 +66,7 @@ Analyzes warnings and errors:
 Demo supports cross compiler
 
 Provides modification of standard environment variables:
-* CPPFLAGS, LDFLAGS, LDLIBS, LD_LIBRARY_PATH
+* CPATH, CPPFLAGS, LIBRARY_PATH, LDFLAGS, LDLIBS, LD_LIBRARY_PATH
 
 Uses tools for searing of missing components:
 * ctags, nm, find

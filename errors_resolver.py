@@ -64,7 +64,7 @@ def search_lib_path(lib):
     m = re.match(r'(.*)\/lib.*\.so', line)
     if m is not None:
         log(m.group(1))
-        return ["LDFLAGS+=' -L %s';" % m.group(1), "LD_LIBRARY_PATH+=':%s';" % m.group(1)]
+        return ["LIBRARY_PATH+=':%s';" % m.group(1), "LD_LIBRARY_PATH+=':%s';" % m.group(1)]
 
 def search_declarations(undeclared):
     log(undeclared)
@@ -124,7 +124,7 @@ def search_file(f):
             m = re.match('(.*)/' + f, line)
             if m:
                 log('{'+ m.group(1) + '}')
-                add(res, 'CPPFLAGS+=" -I%s";' % substitute_paths(m.group(1)))
+                add(res, 'CPATH+=":%s";' % substitute_paths(m.group(1)))
     return res
 
 

@@ -10,6 +10,7 @@ if ! ctags --help > /dev/null; then
 	exit 1
 fi
 
+export CPATH LIBRARY_PATH
 export CPPFLAGS
 export LDFLAGS=
 export LDLIBS
@@ -98,7 +99,9 @@ else
 fi
 
 echo -e "\nFinal result:\n"
+showv CPATH
 showv CPPFLAGS
+showv LIBRARY_PATH
 showv LDFLAGS
 showv LDLIBS
 echo "make -B -f /dev/null errors_resolver_sample "
