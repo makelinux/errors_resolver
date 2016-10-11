@@ -96,10 +96,10 @@ def search_command(command):
     res = []
     for line in proc.stdout:
         log(line)
-        m = re.match('.*apt-get install ([\w-]+)', line)
+        m = re.match('.*apt(-get)? install ([\w-]+)', line)
         if m:
-            log('{'+ m.group(1) + '}')
-            add(res, "packages+=' %s';" % m.group(1))
+            log('{'+ m.group(2) + '}')
+            add(res, "packages+=' %s';" % m.group(2))
         m = re.match('^ \* ([\w-]+)\n', line)
         if m:
             log('{'+ m.group(1) + '}')
