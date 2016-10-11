@@ -8,6 +8,7 @@ from subprocess import check_output
 from errno import errorcode
 
 obj_path = os.environ.get('obj_path', '.').replace(':', ' ')
+symbols_list = re.sub(r'[\.:/ ]+', '_', obj_path) + '.list'
 src_path = os.environ.get('src_path', '.').replace(':', ' ')
 
 includedir = os.environ.get('includedir', '/usr/include') # can be provided by cross-compiler
@@ -49,7 +50,10 @@ def search_definitions_src(undefined):
 def search_definitions_lib(undefined):
     # TODO
     log(obj_path)
-    line = popen_readline('grep --word-regexp ".* T ' + undefined + '\>" symbols.list | cut --fields=1 --delimiter=":"')
+    if not os.path.isfile(symbols_list):
+        os.system('nm --demangle --defined-only --print-file-name $(find ' + obj_path +
+            ' -name "lib*.so" -o -name "lib*.so.*" -o -name *.o) 2> /dev/null > ' + symbols_list);
+    line = popen_readline('grep --word-regexp ".* T ' + undefined + '\>" ' + symbols_list + '| cut --fields=1 --delimiter=":"')
     m = re.match(r'.*\/lib(.*)\.so', line)
     if m:
         return "LDLIBS+=' -l %s';" % m.group(1)
@@ -240,10 +244,6 @@ def parse_fileinput():
                 add(solutions, s)
     for s in solutions:
         print(s)
-
-if not os.path.isfile('symbols.list'):
-    os.system('nm --demangle --defined-only --print-file-name $(find ' + obj_path +
-        ' -name "lib*.so" -o -name "lib*.so.*" -o -name *.o) 2> /dev/null > symbols.list');
 
 if not os.path.isfile('tags'):
     os.system('ctags --recurse --sort=no ' + src_path)
