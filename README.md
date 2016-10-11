@@ -19,7 +19,7 @@ In this example errors_resolver.py searches tags and provides missing header fil
 ./errors_resolver_demo
 
 PS: remove files from previous test if need
-* rm errors_resolver_sample prototype.tags sub/libsub.so system.tags
+* rm errors_resolver_sample prototype.tags sub/libsub.so
 
 ## Run above demo with cross compiler:
 

@@ -9,6 +9,10 @@ from errno import errorcode
 
 obj_path = os.environ.get('obj_path', '.').replace(':', ' ')
 src_path = os.environ.get('src_path', '.').replace(':', ' ')
+
+includedir = os.environ.get('includedir', '/usr/include') # can be provided by cross-compiler
+includedir_tags = re.sub(r'[:/ ]+', '_', includedir) + '.tags'
+
 verbose = int(os.environ.get('verbose', '0'))
 
 def log(*args, **kwargs):
@@ -68,9 +72,13 @@ def search_lib_path(lib):
 
 def search_declarations(undeclared):
     log(undeclared)
+    if not os.path.isfile(includedir_tags):
+        log('Building tags for ' + includedir)
+        os.system('ctags --sort=no -o ' + includedir_tags + ' --recurse --sort=no --c-kinds=+ep -I __THROW,__THROWNL,__nonnull ' +
+                includedir)
     # TODO: man 3 $undeclared | grep '#include'
     proc = subprocess.Popen(
-            'grep "^' + undeclared + '\t" system.tags prototype.tags '
+            'grep "^' + undeclared + '\t" ' + includedir_tags + ' prototype.tags '
             '| cut --fields=2'
             '| awk "{ print length, \$0 }"'
             '| sort --numeric-sort --stable'
@@ -234,12 +242,6 @@ if not os.path.isfile('symbols.list'):
 
 if not os.path.isfile('tags'):
     os.system('ctags --recurse --sort=no ' + src_path)
-
-if not os.path.isfile('system.tags'):
-    includedir = os.environ.get('includedir', '/usr/include')
-    log('Building system.tags for ' + includedir)
-    os.system('ctags --sort=no -o system.tags --recurse --sort=no --c-kinds=+ep -I __THROW,__THROWNL,__nonnull ' +
-            os.environ.get('includedir', '/usr/include'))
 
 if not os.path.isfile('prototype.tags'):
     # TODO: optional current dir (-C ...)
