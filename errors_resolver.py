@@ -237,7 +237,7 @@ if not os.path.isfile('tags'):
 if not os.path.isfile('system.tags'):
     includedir = os.environ.get('includedir', '/usr/include')
     log('Building system.tags for ' + includedir)
-    os.system('ctags --sort=no -o system.tags --recurse --sort=no --c-kinds=+ep -I __THROW,__THROWNL,__nonnull + ' +
+    os.system('ctags --sort=no -o system.tags --recurse --sort=no --c-kinds=+ep -I __THROW,__THROWNL,__nonnull ' +
             os.environ.get('includedir', '/usr/include'))
 
 if not os.path.isfile('prototype.tags'):
