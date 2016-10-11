@@ -35,7 +35,8 @@ def search_definitions_src(undefined):
     for src in proc.stdout:
         src = substitute_paths(src.rstrip())
         log('proc src=' + src)
-        add(ret, "LDLIBS+=' %s';" % (os.path.splitext(src)[0]+'.o'))
+        add(ret, "LDLIBS+=' %s';" % src)
+        #add(ret, "LDLIBS+=' %s';" % (os.path.splitext(src)[0]+'.o')) # an option to add object
         break
     if ret:
         return ret

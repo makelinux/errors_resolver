@@ -6,7 +6,7 @@
 #include <string.h>
 #include <errno.h>
 #endif
-#include <sub2.h>
+#include <empty.h>
 
 int main(void)
 {
@@ -22,6 +22,7 @@ int main(void)
 		printf("addr=%u.%u.%u.%u\n", p[0], p[1], p[2], p[3]);
 	}
 	sub(NULL);
+	sub2(NULL);
 	pthread_t thread;
 	pthread_create(&thread, NULL, &sub, NULL);
 	exit(EXIT_SUCCESS);
