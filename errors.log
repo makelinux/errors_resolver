@@ -22,3 +22,4 @@ error -1
 error=2
 errno=-3
 errno=4
+cifs_mount failed w/return code = -113
