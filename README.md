@@ -19,7 +19,7 @@ In this example errors_resolver.py searches tags and provides missing header fil
 ./errors_resolver_demo
 
 PS: remove files from previous test if need
-rm errors_resolver_sample prototype.tags sub/libsub.so system.tags
+* rm errors_resolver_sample prototype.tags sub/libsub.so system.tags
 
 ## Run above demo with cross compiler:
 
@@ -42,7 +42,7 @@ sudo ./errors_resolver.py /var/log/*log
 
 ./errors_resolver.py < [errors.log](https://github.com/makelinux/errors_resolver/blob/master/errors.log)
 
-## errors_resolver.py - core application
+## Description of core application errors_resolver.py
 
 ### Input:
 
@@ -60,9 +60,10 @@ Analyzes warnings and errors:
 * undeclared symbol
 * undefined symbol
 * library not found or missing
-* command not fount
+* command not found
 * decodes numeric system errno
 * catches some disk errors
+
 Demo supports cross compiler
 
 Provides modification of standard environment variables:
