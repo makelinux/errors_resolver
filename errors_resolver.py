@@ -153,7 +153,7 @@ def parse_error(line, error, _type):
         return {status: 'error', 'type': _type, 'name': m.group(1)}
 
 def parse_err(solutions, line, error, solution_func):
-    m = re.match('.*?' + error, line)
+    m = re.match('.*?' + error, line, re.IGNORECASE)
     if m is not None:
         log('line=' + line)
         log('error=' + error)
@@ -170,7 +170,7 @@ def err2cmd(solutions, line, error, command):
 
 def errno(n):
     # TODO: provide context
-    return "echo " + os.strerror(abs(int(n)))
+    return 'echo errno=%d "%s"' % (int(n), os.strerror(abs(int(n))))
 
 def parse_line_for_errors(l):
     s = []
@@ -187,7 +187,8 @@ def parse_line_for_errors(l):
     parse_err(s, l, 'ld: cannot find -l(.*)', search_lib_path)
     parse_err(s, l, 'warning: lib(.*?)\..*, needed by .*, not found .*', search_lib_path)
     parse_err(s, l, 'error while loading shared libraries: lib(.*?)\..*: cannot open shared object file', search_lib_path)
-    parse_err(s, l, '([^:^ ]+): command not found', search_command)
+    parse_err(s, l, 'failed to run (.*?):', search_command)
+    #parse_err(s, l, ': ([^:^ ]+): not found', search_command)
     # ld: cannot find sub/sub.o: No such file or directory
     # cc: error: sub/sub.o: No such file or directory
     #TODO:
@@ -195,6 +196,7 @@ def parse_line_for_errors(l):
 
     parse_err(s, l, 'error[= ](-?\d+)', errno)
     parse_err(s, l, 'errno[= ](-?\d+)', errno)
+    parse_err(s, l, 'return code = (-?\d+)', errno)
 
     # Storage errors in kernel log:
     # try to run e2fsck without unmounting in read only mode
