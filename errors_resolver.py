@@ -51,8 +51,9 @@ def search_definitions_lib(undefined):
     # TODO
     log(obj_path)
     if not os.path.isfile(symbols_list):
-        os.system('nm --demangle --defined-only --print-file-name $(find ' + obj_path +
-            ' -name "lib*.so" -o -name "lib*.so.*" -o -name *.o) 2> /dev/null > ' + symbols_list);
+        print('Building symbols list for ' + obj_path, file=sys.stderr)
+        os.system('nm --demangle --defined-only --print-file-name --no-sort $(find ' + obj_path +
+            ' -name "lib*.so" -o -name "lib*.so.*" -o -name *.o 2> /dev/null) 2> /dev/null | grep " T " > ' + symbols_list);
     line = popen_readline('grep --word-regexp ".* T ' + undefined + '\>" ' + symbols_list + '| cut --fields=1 --delimiter=":"')
     m = re.match(r'.*\/lib(.*)\.so', line)
     if m:
@@ -79,7 +80,7 @@ def search_lib_path(lib):
 def search_declarations(undeclared):
     log(undeclared)
     if not os.path.isfile(includedir_tags):
-        log('Building tags for ' + includedir)
+        print('Building tags for ' + includedir, file = sys.stderr)
         os.system('ctags --sort=no -o ' + includedir_tags + ' --recurse --sort=no --c-kinds=+ep -I __THROW,__THROWNL,__nonnull ' +
                 includedir)
     # TODO: man 3 $undeclared | grep '#include'
@@ -250,7 +251,7 @@ if not os.path.isfile('tags'):
 
 if not os.path.isfile('prototype.tags'):
     # TODO: optional current dir (-C ...)
-    log('Building prototype.tags')
+    print('Building prototype.tags', file=sys.stderr)
     os.system('ctags -o prototype.tags --recurse --sort=no --c-kinds=p ' + src_path)
 
 parse_fileinput()
