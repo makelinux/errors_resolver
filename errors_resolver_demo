@@ -43,7 +43,7 @@ fatal()
 
 echo -e "Initial invironment\n"
 # Feature substitute_paths allows to substitute long paths to shortcut variables.
-export substitute_paths=d1:d2 d1=some/long/path d2=sub
+export substitute_paths=d1:d2 d1=some/long/path d2=some/long/path2
 showv CC $'\n'
 showv includedir $'\n'
 showv obj_path $'\n'
