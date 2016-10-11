@@ -73,6 +73,11 @@ eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py 
 cat out.tmp
 echo
 
+showv CPPFLAGS
+showv LDFLAGS
+showv LDLIBS
+echo -e "\n"
+
 echo -e "Final compilation:\n"
 make -B -f /dev/null errors_resolver_sample || fatal
 
