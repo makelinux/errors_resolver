@@ -3,44 +3,45 @@
 The mission of Errors resolver is to provide resolutions or recommendations for standard errors. For example it analyzes some build errors caused by missing components, searches the missing components in system environment and provides a location to missing components.
 
 For example:
-
+```
 echo "warning: implicit declaration of function ‘pthread_create’" | ./errors_resolver.py
-
+```
 Output with solution:
-
+```
 CPPFLAGS+=' -include pthread.h';
-
+```
 In this example errors_resolver.py searches tags and provides missing header file.
 
 ## Demonstrations:
 
 ### Resolving compilation configuration errors:
-
+```
 ./errors_resolver_demo
-
-PS: remove files from previous test if need
-* rm tags *.tags *.list sub/libsub.so errors_resolver_sample
-
+```
+PS: remove files from previous test if need 
+```
+rm tags *.tags *.list sub/libsub.so errors_resolver_sample
+```
 ## Run above demo with cross compiler:
-
+```
 CC=arm-linux-gnueabi-gcc ./errors_resolver_demo
-
+```
 This demo was tested on Ubuntu, where gcc-arm-linux-gnueabi and qemu-user are installed.
 
 ## Demo of resolving error 'command not found'
 
 Helper /usr/lib/command-not-found resolves the error in interactive shell.
 To resolve errors in subroutine run:
-
+```
 ./command-not-found-demo
-
+```
 ## Analyzing system logs
-
+```
 sudo ./errors_resolver.py /var/log/*log
-
+```
 ## Resolving various errors from a log file:
 
-./errors_resolver.py < [errors.log](https://github.com/makelinux/errors_resolver/blob/master/errors.log)
+ ./errors_resolver.py < [errors.log](https://github.com/makelinux/errors_resolver/blob/master/errors.log)
 
 ## Description of core application errors_resolver.py
 
@@ -74,9 +75,9 @@ Uses tools for searing of missing components:
 * /usr/lib/command-not-found
 
 ## Regression test:
-
-* (./errors_resolver_demo && CC=arm-linux-gnueabi-gcc ./errors_resolver_demo && ./command-not-found-demo && ./errors_resolver.py errors.log && echo PASSED) > regression_test.log 2>&1 && echo PASSED || (tail regression_test.log; false)
-
+```
+(./errors_resolver_demo && CC=arm-linux-gnueabi-gcc ./errors_resolver_demo && ./command-not-found-demo && ./errors_resolver.py errors.log && echo PASSED) > regression_test.log 2>&1 && echo PASSED || (tail regression_test.log; false)
+```
 ## To to list:
 * Analyze more ./configure errors.
 
