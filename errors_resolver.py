@@ -194,7 +194,8 @@ def parse_line_for_errors(l):
     #TODO:
     # --with-libiconv
 
-    parse_err(s, l, 'error[= ](-?\d+)', errno)
+    if re.match('make: .* Error 1', l) is None:
+        parse_err(s, l, 'error[= ](-?\d+)', errno)
     parse_err(s, l, 'errno[= ](-?\d+)', errno)
     parse_err(s, l, 'return code = (-?\d+)', errno)
 
