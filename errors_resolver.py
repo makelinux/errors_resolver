@@ -84,6 +84,10 @@ def search_declarations(undeclared):
         os.system('ctags --sort=no -o ' + includedir_tags + ' --recurse --sort=no --c-kinds=+ep -I __THROW,__THROWNL,__nonnull ' +
                 includedir)
     # TODO: man 3 $undeclared | grep '#include'
+    if not os.path.isfile('prototype.tags'):
+        # TODO: optional current dir (-C ...)
+        print('Building prototype.tags', file=sys.stderr)
+        os.system('ctags -o prototype.tags --recurse --sort=no --c-kinds=p ' + src_path)
     proc = subprocess.Popen(
             'grep "^' + undeclared + '\t" ' + includedir_tags + ' prototype.tags '
             '| cut --fields=2'
@@ -248,10 +252,5 @@ def parse_fileinput():
 
 if not os.path.isfile('tags'):
     os.system('ctags --recurse --sort=no ' + src_path)
-
-if not os.path.isfile('prototype.tags'):
-    # TODO: optional current dir (-C ...)
-    print('Building prototype.tags', file=sys.stderr)
-    os.system('ctags -o prototype.tags --recurse --sort=no --c-kinds=p ' + src_path)
 
 parse_fileinput()
