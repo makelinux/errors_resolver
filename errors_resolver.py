@@ -197,6 +197,7 @@ def parse_line_for_errors(l):
     parse_err(s, l, 'ld: cannot find -l(.*)', search_lib_path)
     parse_err(s, l, 'warning: lib(.*?)\..*, needed by .*, not found .*', search_lib_path)
     parse_err(s, l, 'error while loading shared libraries: lib(.*?)\..*: cannot open shared object file', search_lib_path)
+    parse_err(s, l, '([^:^ ]+): command not found', search_command)
     parse_err(s, l, 'failed to run (.*?):', search_command)
     #parse_err(s, l, ': ([^:^ ]+): not found', search_command)
     # ld: cannot find sub/sub.o: No such file or directory
