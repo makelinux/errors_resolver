@@ -25,3 +25,4 @@ echo
 echo "Result:"
 eval $(fff 2>&1 | ./errors_resolver.py)
 echo "This packages provide above not found commands: $packages"
+test -n "$packages"
