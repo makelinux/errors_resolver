@@ -68,7 +68,9 @@ def search_lib_path(lib):
     m = re.match(r'(.*)\/lib.*\.so', line)
     if m is not None:
         log(m.group(1))
-        return ["LIBRARY_PATH+=':%s';" % m.group(1), "LD_LIBRARY_PATH+=':%s';" % m.group(1)]
+        # arm-linux-gnueabi-gcc doesn't support LIBRARY_PATH
+        #return ["LIBRARY_PATH+=':%s';" % m.group(1), "LD_LIBRARY_PATH+=':%s';" % m.group(1)]
+        return ["LDFLAGS+=' -L %s';" % m.group(1), "LD_LIBRARY_PATH+=':%s';" % m.group(1)]
 
 def search_declarations(undeclared):
     log(undeclared)

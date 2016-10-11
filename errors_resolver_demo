@@ -74,7 +74,9 @@ eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py 
 cat out.tmp
 echo
 
+showv CPATH
 showv CPPFLAGS
+#showv LIBRARY_PATH
 showv LDFLAGS
 showv LDLIBS
 echo -e "\n"
@@ -101,7 +103,7 @@ fi
 echo -e "\nFinal result:\n"
 showv CPATH
 showv CPPFLAGS
-showv LIBRARY_PATH
+#showv LIBRARY_PATH
 showv LDFLAGS
 showv LDLIBS
 echo "make -B -f /dev/null errors_resolver_sample "
