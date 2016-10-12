@@ -108,8 +108,11 @@ def search_declarations(undeclared):
         os.environ["CTAGS"] += " --exclude=etip.h" # avoid 'exit' collision
         os.environ["CTAGS"] += " --exclude=mysql" # avoid mysql/my_pthread.h collision
         os.environ["CTAGS"] += " --exclude=pthreadtypes.h" # favor pthread.h
+        os.environ["CTAGS"] += " --exclude=stdio2.h" # favor stdio.h
+        os.environ["CTAGS"] += " --exclude=internal"
         os.environ["CTAGS"] += " --sort=no --recurse "
         os.environ["CTAGS"] += " --c-kinds=+ep "
+        # TODO: custom exclude
         print('Building tags for ' + includedir, file = sys.stderr)
         os.system('ctags -o ' + includedir_tags + ' ' + includedir)
     # TODO: man 3 $undeclared | grep '#include'
