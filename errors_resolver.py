@@ -108,9 +108,10 @@ def search_declarations(undeclared):
         os.environ["CTAGS"] += " --exclude=etip.h" # avoid 'exit' collision
         os.environ["CTAGS"] += " --exclude=mysql" # avoid mysql/my_pthread.h collision
         os.environ["CTAGS"] += " --exclude=pthreadtypes.h" # favor pthread.h
+        os.environ["CTAGS"] += " --sort=no --recurse "
+        os.environ["CTAGS"] += " --c-kinds=+ep "
         print('Building tags for ' + includedir, file = sys.stderr)
-        os.system('ctags --sort=no -o ' + includedir_tags + ' --recurse --sort=no --c-kinds=+ep -I __THROW,__THROWNL,__nonnull ' +
-                includedir)
+        os.system('ctags -o ' + includedir_tags + ' ' + includedir)
     # TODO: man 3 $undeclared | grep '#include'
     if not os.path.isfile('prototype.tags'):
         # TODO: optional current dir (-C ...)
@@ -281,6 +282,8 @@ def parse_fileinput():
         print(s)
 
 if not os.path.isfile('tags'):
-    os.system('ctags --recurse --sort=no ' + src_path)
+    if os.system('ctags --recurse --sort=no ' + src_path) !=0:
+        print('echo please install ctags')
+        exit(1)
 
 parse_fileinput()
