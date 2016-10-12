@@ -31,13 +31,11 @@ for line in proc.stdout:
         break
 includedir_tags = re.sub(r'[:/ ]+', '_', includedir) + '.tags'
 
-lib_path = '.' # TODO user_obj
+lib_path = '. ' # TODO user_obj
 proc = subprocess.Popen(os.environ.get('CC', 'gcc') + ' -Xlinker --verbose 2> /dev/null',
         shell = True, stdout = subprocess.PIPE)
 for line in proc.stdout:
-    a = re.findall('.*?SEARCH_DIR\("=?([^"]+)"\); *', line)
-    for d in a:
-        lib_path += ' ' + d
+    lib_path += ' '.join(re.findall('.*?SEARCH_DIR\("=?([^"]+)"\); *', line))
 log('lib_path = ' + lib_path)
 symbols_list = re.sub(r'[\.:/ ]+', '_', lib_path) + '.list'
 
