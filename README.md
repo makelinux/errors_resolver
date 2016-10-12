@@ -18,9 +18,11 @@ In this example errors_resolver.py searches tags and provides missing header fil
 
  ./[errors_resolver_demo](https://github.com/makelinux/errors_resolver/blob/master/errors_resolver_demo)
 
+You can see saved output in file [errors_resolver_demo.log](https://github.com/makelinux/errors_resolver/blob/master/errors_resolver_demo.log)
+
 PS: remove files from previous test if need 
 ```
-rm tags *.tags *.list sub/libsub.so errors_resolver_sample
+rm tags *.tags *.list *.tmp sub/libsub.so errors_resolver_sample
 ```
 ## Run above demo with cross compiler:
 ```
@@ -36,7 +38,7 @@ To resolve errors in subroutine run:
 
  ./[command-not-found-demo](https://github.com/makelinux/errors_resolver/blob/master/command-not-found-demo)
 
-## Analyzing system logs
+## Analyze system logs
 ```
 sudo ./errors_resolver.py /var/log/*log
 ```
