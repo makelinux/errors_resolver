@@ -3,9 +3,9 @@
 The mission of Errors resolver is to provide resolutions or recommendations for standard errors. For example it analyzes some build errors caused by missing components, searches the missing components in system environment and provides a location to missing components.
 
 For example:
-```
-echo "warning: implicit declaration of function ‘pthread_create’" | ./errors_resolver.py
-```
+
+ echo "warning: implicit declaration of function ‘pthread_create’" | ./[errors_resolver.py](https://github.com/makelinux/errors_resolver/blob/master/errors_resolver.py)
+
 Output with solution:
 ```
 CPPFLAGS+=' -include pthread.h';
@@ -15,9 +15,9 @@ In this example errors_resolver.py searches tags and provides missing header fil
 ## Demonstrations:
 
 ### Resolving compilation configuration errors:
-```
-./errors_resolver_demo
-```
+
+ ./[errors_resolver_demo](https://github.com/makelinux/errors_resolver/blob/master/errors_resolver_demo)
+
 PS: remove files from previous test if need 
 ```
 rm tags *.tags *.list sub/libsub.so errors_resolver_sample
@@ -32,9 +32,10 @@ This demo was tested on Ubuntu, where gcc-arm-linux-gnueabi and qemu-user are in
 
 Helper /usr/lib/command-not-found resolves the error in interactive shell.
 To resolve errors in subroutine run:
-```
-./command-not-found-demo
-```
+
+
+ ./[command-not-found-demo](https://github.com/makelinux/errors_resolver/blob/master/command-not-found-demo)
+
 ## Analyzing system logs
 ```
 sudo ./errors_resolver.py /var/log/*log
