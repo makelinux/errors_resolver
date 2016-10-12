@@ -14,8 +14,10 @@ def log(*args, **kwargs):
         print(inspect.stack()[1][3], str(*args).rstrip(), file=sys.stderr, **kwargs)
     pass
 
-obj_path = os.environ.get('obj_path', '.').replace(':', ' ')
-symbols_list = re.sub(r'[\.:/ ]+', '_', obj_path) + '.list'
+#
+# Configuration:
+#
+
 src_path = os.environ.get('src_path', '.').replace(':', ' ')
 
 # includedir is /usr/include or another for a cross-compiler
@@ -29,6 +31,20 @@ for line in proc.stdout:
         break
 
 includedir_tags = re.sub(r'[:/ ]+', '_', includedir) + '.tags'
+
+lib_path = '.' # TODO user_obj
+proc = subprocess.Popen(os.environ.get('CC', 'gcc') + ' -Xlinker --verbose 2> /dev/null',
+        shell = True, stdout = subprocess.PIPE)
+for line in proc.stdout:
+    a = re.findall('.*?SEARCH_DIR\("=?([^"]+)"\); *', line)
+    for d in a:
+        lib_path += ' ' + d
+log('lib_path = ' + lib_path)
+symbols_list = re.sub(r'[\.:/ ]+', '_', lib_path) + '.list'
+
+#
+#   Subroutines:
+#
 
 def substitute_paths(path):
     for subst in os.environ.get('substitute_paths',':').split(':'):
@@ -58,10 +74,10 @@ def search_definitions_src(undefined):
 
 def search_definitions_lib(undefined):
     # TODO
-    log(obj_path)
+    log(lib_path)
     if not os.path.isfile(symbols_list):
-        print('Building symbols list for ' + obj_path, file=sys.stderr)
-        os.system('nm --demangle --defined-only --print-file-name --no-sort $(find ' + obj_path +
+        print('Building symbols list for ' + lib_path, file=sys.stderr)
+        os.system('nm --demangle --defined-only --print-file-name --no-sort $(find ' + lib_path +
             ' -name "lib*.so" -o -name "lib*.so.*" -o -name *.o 2> /dev/null) 2> /dev/null | grep " T " > ' + symbols_list);
     line = popen_readline('grep --word-regexp ".* T ' + undefined + '\>" ' + symbols_list + '| cut --fields=1 --delimiter=":"')
     m = re.match(r'.*\/lib(.*)\.so', line)
@@ -76,8 +92,8 @@ def search_definitions(undefined):
     return ret
 
 def search_lib_path(lib):
-    log(obj_path)
-    line = popen_readline('find ' + obj_path + ' -name "lib' + lib + '.so" -printf "%P\n" 2> /dev/null')
+    log(lib_path)
+    line = popen_readline('find ' + lib_path + ' -name "lib' + lib + '.so" -printf "%P\n" 2> /dev/null')
     log(line)
     m = re.match(r'(.*)\/lib.*\.so', line)
     if m is not None:

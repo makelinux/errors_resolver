@@ -25,7 +25,6 @@ export CTAGS
 # Credit: http://stackoverflow.com/questions/1632633/ctags-does-not-parse-stdio-h-properly#1632633
 
 [ -z "$CC" ] && CC=gcc
-export obj_path=$($CC -Xlinker --verbose  2>/dev/null | grep SEARCH | sed 's/SEARCH_DIR("=\?\([^"]\+\)"); */\1:/g'  | grep -vE '^$'):.
 
 showv()
 {
@@ -42,7 +41,6 @@ echo -e "Initial invironment\n"
 # Feature substitute_paths allows to substitute long paths to shortcut variables.
 export substitute_paths=d1:d2 d1=some/long/path d2=some/long/path2
 showv CC $'\n'
-showv obj_path $'\n'
 showv substitute_paths
 showv d1
 showv d2 $'\n'
