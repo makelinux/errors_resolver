@@ -30,7 +30,7 @@ for line in proc.stdout:
         break
 includedir_tags = re.sub(r'[:/ ]+', '_', includedir) + '.tags'
 
-lib_path = '. ' # TODO user_obj
+lib_path = '. ' # TODO user_obj, LIBRARY_PATH
 proc = subprocess.Popen(os.environ.get('CC', 'gcc') + ' -Xlinker --verbose 2> /dev/null',
         shell = True, stdout = subprocess.PIPE)
 for line in proc.stdout:

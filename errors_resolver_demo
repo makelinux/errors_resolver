@@ -12,33 +12,29 @@ fi
 
 export CPATH LIBRARY_PATH
 export CPPFLAGS
-export LDFLAGS=
+export LDFLAGS
 export LDLIBS
 export LD_LIBRARY_PATH
 
 CPPFLAGS=-Wall
 [ -z "$CC" ] && CC=gcc
 
-showv()
-{
-	val=$(eval "echo \$${1}"); echo -n "$1='$val' $2"
-}
+showv() { val=$(eval "echo \$${1}"); echo -n "$1='$val' $2"; }
 
-fatal()
-{
-	echo "Fatal error $1"
-	exit 1
-}
+fatal() { echo "Fatal error $1"; exit 1; }
+
+(echo | python) || fatal
 
 echo -e "Initial invironment\n"
 # Feature substitute_paths allows to substitute long paths to shortcut variables.
 export substitute_paths=d1:d2 d1=some/long/path d2=some/long/path2
 showv CC $'\n'
-showv substitute_paths
-showv d1
-showv d2 $'\n'
+#showv substitute_paths
+#showv d1
+#showv d2 $'\n'
 
-make -s -B -C sub
+#prepare sub library
+make --quiet --always-make -C sub
 echo
 
 echo -e "pass 1: resolve headers paths\n"
@@ -69,7 +65,7 @@ showv LDLIBS
 echo -e "\n"
 
 echo -e "Final compilation:\n"
-make -B -f /dev/null errors_resolver_sample || fatal
+make --always-make errors_resolver_sample || fatal
 
 if [ -e ./errors_resolver_sample ]; then
 	arch=$(echo $(file -e elf ./errors_resolver_sample | cut -d',' -f2 | tr - _))
@@ -93,6 +89,6 @@ showv CPPFLAGS
 #showv LIBRARY_PATH
 showv LDFLAGS
 showv LDLIBS
-echo "make -B -f /dev/null errors_resolver_sample "
+echo "make -B errors_resolver_sample "
 showv LD_LIBRARY_PATH
 echo ./errors_resolver_sample
