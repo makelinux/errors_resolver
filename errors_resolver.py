@@ -22,14 +22,13 @@ src_path = os.environ.get('src_path', '.').replace(':', ' ')
 
 # includedir is /usr/include or another for a cross-compiler
 proc = subprocess.Popen('echo "#include <stdio.h>" | ' + os.environ.get('CC', 'gcc') + ' -E - ',
-    shell=True, stdout=subprocess.PIPE)
+    shell = True, stdout = subprocess.PIPE)
 for line in proc.stdout:
     m = re.match('.*?"(/.*)/stdio.h', line)
     if m:
         includedir = os.path.normpath(m.group(1))
         log('includedir=' + includedir);
         break
-
 includedir_tags = re.sub(r'[:/ ]+', '_', includedir) + '.tags'
 
 lib_path = '.' # TODO user_obj
@@ -171,7 +170,6 @@ def search_file(f):
                 add(res, 'CPATH+=":%s";' % substitute_paths(m.group(1)))
     return res
 
-
 def need_package(package):
     #return 'sudo apt-get install ' + package
     return "packages+=' %s'" % package
@@ -220,7 +218,6 @@ def parse_line_for_errors(l):
     s = []
 
     # Compilation and linkage errors:
-    parse_err(s, l, '/usr/lib/(command-not-found): No such file or directory', need_package)
     parse_err(s, l, 'fatal error: ([^:^ ]+): No such file or directory', search_file)
     parse_err(s, l, 'error: unknown type name ‘(.*)’.*', search_declarations)
     parse_err(s, l, 'warning: implicit declaration of function ‘(.*)’.*', search_declarations)
@@ -236,7 +233,8 @@ def parse_line_for_errors(l):
     #TODO:
     # --with-libiconv
 
-    # Uninstalled packages:
+    # Not installed packages:
+    parse_err(s, l, '/usr/lib/(command-not-found): No such file or directory', need_package)
     parse_err(s, l, '([^:^ ]+): command not found', search_command)
     parse_err(s, l, 'failed to run (.*?):', search_command)
     #parse_err(s, l, ': ([^:^ ]+): not found', search_command)
