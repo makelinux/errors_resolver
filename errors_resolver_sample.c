@@ -17,7 +17,7 @@ int main(void)
 	int ret, herrno;
 
 	ret = gethostbyname_r("localhost", &resbuf, buffer, sizeof(buffer), &hep, &herrno);
-	if ( ret >= 0) {
+	if (ret >= 0) {
 		unsigned char *p = (unsigned char*)hep->h_addr_list[0];
 		printf("addr=%u.%u.%u.%u\n", p[0], p[1], p[2], p[3]);
 	}

@@ -4,12 +4,12 @@ The mission of Errors resolver is to provide resolutions or recommendations for 
 
 For example:
 
- echo "warning: implicit declaration of function ‘pthread_create’" | ./[errors_resolver.py](https://github.com/makelinux/errors_resolver/blob/master/errors_resolver.py)
+  echo "undefined reference to \`pthread_create'" | ./[errors_resolver.py](https://github.com/makelinux/errors_resolver/blob/master/errors_resolver.py)
 
 Output with solution:
-```
-CPPFLAGS+=' -include pthread.h';
-```
+
+  LDLIBS+=' -l pthread';
+
 In this example errors_resolver.py searches tags and provides missing header file.
 
 ## Demonstrations:
