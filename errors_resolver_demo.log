@@ -1,0 +1,77 @@
+Initial invironment
+
+CC='gcc' 
+
+pass 1: resolve headers paths
+
+errors_resolver_sample.c:9:19: fatal error: empty.h: No such file or directory
+
+Fix:
+CPATH+=":sub";
+
+pass 2: resolve headers
+
+errors_resolver_sample.c:14:17: error: storage size of ‘he’ isn’t known
+errors_resolver_sample.c:16:9: error: variable ‘resbuf’ has initializer but incomplete type
+errors_resolver_sample.c:16:9: warning: excess elements in struct initializer [enabled by default]
+errors_resolver_sample.c:16:9: warning: (near initialization for ‘resbuf’) [enabled by default]
+errors_resolver_sample.c:16:17: error: storage size of ‘resbuf’ isn’t known
+errors_resolver_sample.c:19:2: warning: implicit declaration of function ‘gethostbyname_r’ [-Wimplicit-function-declaration]
+errors_resolver_sample.c:21:41: error: dereferencing pointer to incomplete type
+errors_resolver_sample.c:22:3: warning: implicit declaration of function ‘printf’ [-Wimplicit-function-declaration]
+errors_resolver_sample.c:22:3: warning: incompatible implicit declaration of built-in function ‘printf’ [enabled by default]
+errors_resolver_sample.c:24:2: warning: implicit declaration of function ‘sub’ [-Wimplicit-function-declaration]
+errors_resolver_sample.c:24:6: error: ‘NULL’ undeclared (first use in this function)
+errors_resolver_sample.c:25:2: warning: implicit declaration of function ‘sub2’ [-Wimplicit-function-declaration]
+errors_resolver_sample.c:26:2: error: unknown type name ‘pthread_t’
+errors_resolver_sample.c:27:2: warning: implicit declaration of function ‘pthread_create’ [-Wimplicit-function-declaration]
+errors_resolver_sample.c:28:2: warning: implicit declaration of function ‘exit’ [-Wimplicit-function-declaration]
+errors_resolver_sample.c:28:2: warning: incompatible implicit declaration of built-in function ‘exit’ [enabled by default]
+errors_resolver_sample.c:28:7: error: ‘EXIT_SUCCESS’ undeclared (first use in this function)
+errors_resolver_sample.c:16:17: warning: unused variable ‘resbuf’ [-Wunused-variable]
+errors_resolver_sample.c:14:17: warning: unused variable ‘he’ [-Wunused-variable]
+errors_resolver_sample.c:29:1: warning: control reaches end of non-void function [-Wreturn-type]
+
+Fix:
+CPPFLAGS+=' -include netdb.h';
+CPPFLAGS+=' -include stdio.h';
+CPPFLAGS+=' -include sub.h';
+CPPFLAGS+=' -include libio.h';
+CPPFLAGS+=' -include sub2.h';
+# unresolved pthread_t
+CPPFLAGS+=' -include pthread.h';
+CPPFLAGS+=' -include stdlib.h';
+
+pass 3: resolve libraries
+
+errors_resolver_sample.c:(.text+0x106): undefined reference to `sub'
+errors_resolver_sample.c:(.text+0x110): undefined reference to `sub2'
+errors_resolver_sample.c:(.text+0x121): undefined reference to `sub'
+errors_resolver_sample.c:(.text+0x12e): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+
+Fix:
+LDLIBS+=' -l sub';
+LDLIBS+=' sub/sub2.c';
+LDLIBS+=' -l pthread';
+
+pass 3: resolve library paths
+
+collect2: error: ld returned 1 exit status
+
+Fix:
+LDFLAGS+=' -L sub';
+LD_LIBRARY_PATH+=':sub';
+
+Final compilation:
+
+cc  -Wall -include netdb.h -include stdio.h -include sub.h -include libio.h -include sub2.h -include pthread.h -include stdlib.h  -L sub  errors_resolver_sample.c   -l sub sub/sub2.c -l pthread -o errors_resolver_sample
+
+Test run:
+
+addr=127.0.0.1
+
+Final result:
+
+CPATH=':sub' CPPFLAGS='-Wall -include netdb.h -include stdio.h -include sub.h -include libio.h -include sub2.h -include pthread.h -include stdlib.h' LDFLAGS='-L sub' LDLIBS='-l sub sub/sub2.c -l pthread' make -B errors_resolver_sample 
+LD_LIBRARY_PATH=':sub' ./errors_resolver_sample
