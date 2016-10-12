@@ -130,6 +130,8 @@ def search_declarations(undeclared):
         log('proc line=' + line)
         line = line.rstrip().replace('/usr/include/', '') # TODO: generalize with includedir and CPATH
         #ret += "# for %s:\n" % undeclared
+        for p in os.environ.get('CPATH', '').split(':'):
+            if p != '': line = re.sub( p + '/', '', line)
         add(ret, "CPPFLAGS+=' -include %s';" % line)
         # for demo the first result is enough
         break
@@ -164,8 +166,7 @@ def search_file(f):
     #log(find_opt)
     for p in os.environ.get('file_search_path', '.').split(':'):
         log(p)
-        log('find ' + p + ' ' + os.environ.get('find_flags', '') + ' -name .pc -prune -o -path */' + f + ' -print')
-        proc = subprocess.Popen('find ' + p + ' ' + os.environ.get('find_flags', '') + ' -name .pc -prune -o -path "*/' + f + '" -print',
+        proc = subprocess.Popen('find ' + p + ' ' + os.environ.get('find_flags', '') + ' -name .pc -prune -o -path "*/' + f + '" -printf "%P\n"',
             shell=True, stdout=subprocess.PIPE)
         for line in proc.stdout:
             log(line)
