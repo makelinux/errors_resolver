@@ -131,11 +131,9 @@ def search_declarations(undeclared):
     ret = []
     for line in proc.stdout:
         log('proc line=' + line)
-        line = line.rstrip().replace('/usr/include/', '') # TODO: generalize with includedir and CPATH
-        #ret += "# for %s:\n" % undeclared
-        for p in os.environ.get('CPATH', '').split(':'):
-            if p != '': line = re.sub( p + '/', '', line)
-        add(ret, "CPPFLAGS+=' -include %s';" % line)
+        for p in os.environ.get('CPATH', '').split(':') + [includedir]:
+            if p != '': line = re.sub('^' + p + '/', '', line)
+        add(ret, "CPPFLAGS+=' -include %s';" % line.rstrip())
         # for demo the first result is enough
         break
     if ret:
