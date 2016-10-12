@@ -27,32 +27,20 @@ showv CC $'\n'
 make --quiet --always-make -C sub
 echo
 
-echo -e "pass 1: resolve headers paths\n"
-eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py | tee out.tmp)"
-cat out.tmp
-echo
+pass()
+{
+	echo -e "$1\n"
+	eval "$(make --always-make errors_resolver_sample 2>&1 | tee make.tmp | ./errors_resolver.py | tee out.tmp)"
+	grep -e warning: -e error: -e undefined make.tmp
+	echo -e "\nFix:"
+	cat out.tmp
+	echo
+}
 
-echo -e "pass 1: resolve headers\n"
-eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py | tee out.tmp)"
-cat out.tmp
-echo
-
-echo -e "pass 2: resolve libraries\n"
-eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py | tee out.tmp)"
-cat out.tmp
-echo
-
-echo -e "pass 3: resolve library paths\n"
-eval "$(make -B -f /dev/null errors_resolver_sample 2>&1 | ./errors_resolver.py | tee out.tmp)"
-cat out.tmp
-echo
-
-showv CPATH
-showv CPPFLAGS
-#showv LIBRARY_PATH
-showv LDFLAGS
-showv LDLIBS
-echo -e "\n"
+pass "pass 1: resolve headers paths"
+pass "pass 2: resolve headers"
+pass "pass 3: resolve libraries"
+pass "pass 3: resolve library paths"
 
 echo -e "Final compilation:\n"
 make --always-make errors_resolver_sample || fatal
