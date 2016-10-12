@@ -7,19 +7,28 @@ import fileinput, re, subprocess, os, sys, inspect
 from subprocess import check_output
 from errno import errorcode
 
-obj_path = os.environ.get('obj_path', '.').replace(':', ' ')
-symbols_list = re.sub(r'[\.:/ ]+', '_', obj_path) + '.list'
-src_path = os.environ.get('src_path', '.').replace(':', ' ')
-
-includedir = os.environ.get('includedir', '/usr/include') # can be provided by cross-compiler
-includedir_tags = re.sub(r'[:/ ]+', '_', includedir) + '.tags'
-
 verbose = int(os.environ.get('verbose', '0'))
 
 def log(*args, **kwargs):
     if verbose:
         print(inspect.stack()[1][3], str(*args).rstrip(), file=sys.stderr, **kwargs)
     pass
+
+obj_path = os.environ.get('obj_path', '.').replace(':', ' ')
+symbols_list = re.sub(r'[\.:/ ]+', '_', obj_path) + '.list'
+src_path = os.environ.get('src_path', '.').replace(':', ' ')
+
+# includedir is /usr/include or another for a cross-compiler
+proc = subprocess.Popen('echo "#include <stdio.h>" | ' + os.environ.get('CC', 'gcc') + ' -E - ',
+    shell=True, stdout=subprocess.PIPE)
+for line in proc.stdout:
+    m = re.match('.*?"(/.*)/stdio.h', line)
+    if m:
+        includedir = os.path.normpath(m.group(1))
+        log('includedir=' + includedir);
+        break
+
+includedir_tags = re.sub(r'[:/ ]+', '_', includedir) + '.tags'
 
 def substitute_paths(path):
     for subst in os.environ.get('substitute_paths',':').split(':'):
