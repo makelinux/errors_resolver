@@ -102,6 +102,13 @@ def search_lib_path(lib):
 def search_declarations(undeclared):
     log(undeclared)
     if not os.path.isfile(includedir_tags):
+        my_env = os.environ.copy()
+        os.environ["CTAGS"] = os.environ.get("CTAGS",'')
+        os.environ["CTAGS"] += " -I __THROW,__THROWNL,__nonnull+"
+        # Credit: http://stackoverflow.com/questions/1632633/ctags-does-not-parse-stdio-h-properly#1632633
+        os.environ["CTAGS"] += " --exclude=etip.h" # avoid 'exit' collision
+        os.environ["CTAGS"] += " --exclude=mysql" # avoid mysql/my_pthread.h collision
+        os.environ["CTAGS"] += " --exclude=pthreadtypes.h" # favor pthread.h
         print('Building tags for ' + includedir, file = sys.stderr)
         os.system('ctags --sort=no -o ' + includedir_tags + ' --recurse --sort=no --c-kinds=+ep -I __THROW,__THROWNL,__nonnull ' +
                 includedir)

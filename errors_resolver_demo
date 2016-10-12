@@ -17,13 +17,6 @@ export LDLIBS
 export LD_LIBRARY_PATH
 
 CPPFLAGS=-Wall
-CTAGS="-I __THROW,__THROWNL,__nonnull+"
-CTAGS+=" --exclude=etip.h" # avoid 'exit' collision
-CTAGS+=" --exclude=mysql" # avoid mysql/my_pthread.h collision
-CTAGS+=" --exclude=pthreadtypes.h" # favor pthread.h
-export CTAGS
-# Credit: http://stackoverflow.com/questions/1632633/ctags-does-not-parse-stdio-h-properly#1632633
-
 [ -z "$CC" ] && CC=gcc
 
 showv()
