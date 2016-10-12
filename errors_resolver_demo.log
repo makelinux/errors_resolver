@@ -57,6 +57,7 @@ LDLIBS+=' -l pthread';
 
 pass 3: resolve library paths
 
+/usr/bin/ld: cannot find -lsub
 collect2: error: ld returned 1 exit status
 
 Fix:
