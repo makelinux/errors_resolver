@@ -5,7 +5,6 @@ from __future__ import print_function
 from pprint import pprint
 import fileinput, re, subprocess, os, sys, inspect
 from subprocess import check_output
-from errno import errorcode
 
 verbose = int(os.environ.get('verbose', '0'))
 
@@ -215,9 +214,12 @@ def err2cmd(solutions, line, error, command):
         if re.match('.*?' + error, line):
             add(solutions, command)
 
-def errno(n):
-    # TODO: provide context
-    return 'echo errno=%d "%s"' % (int(n), os.strerror(abs(int(n))))
+def parse_errno(solutions, line, error):
+    m = re.match('.*?' + error, line, re.IGNORECASE)
+    if m is not None:
+        log('line=' + line)
+        log('error=' + error)
+        add(solutions, 'echo "\'%s\' in %s"' % (os.strerror(abs(int(m.group(1)))), line))
 
 def parse_line_for_errors(l):
     s = []
@@ -247,9 +249,9 @@ def parse_line_for_errors(l):
 
     # Decoding errno
     if re.match('make: .* Error 1', l) is None:
-        parse_err(s, l, 'error[= ](-?\d+)', errno)
-    parse_err(s, l, 'errno[= ](-?\d+)', errno)
-    parse_err(s, l, 'return code = (-?\d+)', errno)
+        parse_errno(s, l, 'error[= ](-?\d+)')
+    parse_errno(s, l, 'errno[= ](-?\d+)')
+    parse_errno(s, l, 'return code = (-?\d+)')
 
     # Investigating system logs:
 
@@ -273,7 +275,7 @@ def parse_fileinput():
     for line in fileinput.input():
         if line != '\n':
             log('line=' + line)
-            for s in parse_line_for_errors(line):
+            for s in parse_line_for_errors(line.rstrip('\n')):
                 add(solutions, s)
     for s in solutions:
         print(s)
