@@ -150,11 +150,11 @@ def search_command(command):
         m = re.match('.*apt(-get)? install ([\w-]+)', line)
         if m:
             log('{'+ m.group(2) + '}')
-            add(res, "packages+=' %s';" % m.group(2))
+            add(res, "install+=' %s';" % m.group(2))
         m = re.match('^ \* ([\w-]+)\n', line)
         if m:
             log('{'+ m.group(1) + '}')
-            add(res, "packages+=' %s';" % m.group(1))
+            add(res, "install+=' %s';" % m.group(1))
     return res
 
 def search_file(f):
@@ -179,7 +179,7 @@ def search_file(f):
 
 def need_package(package):
     #return 'sudo apt-get install ' + package
-    return "packages+=' %s'" % package
+    return "install+=' %s'" % package
 
 def add(l1, l2):
     if isinstance(l2, list):
