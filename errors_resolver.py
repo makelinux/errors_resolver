@@ -13,6 +13,9 @@ def log(*args, **kwargs):
         print(inspect.stack()[1][3], str(*args).rstrip(), file=sys.stderr, **kwargs)
     pass
 
+def popen(p):
+    return subprocess.Popen(p, shell=True, stdout=subprocess.PIPE).stdout
+
 #
 # Configuration:
 #
@@ -20,9 +23,7 @@ def log(*args, **kwargs):
 src_path = os.environ.get('src_path', '.').replace(':', ' ')
 
 # includedir is /usr/include or another for a cross-compiler
-proc = subprocess.Popen('echo "#include <stdio.h>" | ' + os.environ.get('CC', 'gcc') + ' -E - ',
-    shell = True, stdout = subprocess.PIPE)
-for line in proc.stdout:
+for line in popen('echo "#include <stdio.h>" | ' + os.environ.get('CC', 'gcc') + ' -E - '):
     m = re.match('.*?"(/.*)/stdio.h', line)
     if m:
         includedir = os.path.normpath(m.group(1))
@@ -31,9 +32,7 @@ for line in proc.stdout:
 includedir_tags = re.sub(r'[:/ ]+', '_', includedir) + '.tags'
 
 lib_path = '. ' # TODO user_obj, LIBRARY_PATH
-proc = subprocess.Popen(os.environ.get('CC', 'gcc') + ' -Xlinker --verbose 2> /dev/null',
-        shell = True, stdout = subprocess.PIPE)
-for line in proc.stdout:
+for line in popen(os.environ.get('CC', 'gcc') + ' -Xlinker --verbose 2> /dev/null'):
     lib_path += ' '.join(re.findall('.*?SEARCH_DIR\("=?([^"]+)"\); *', line))
 log('lib_path = ' + lib_path)
 symbols_list = re.sub(r'[\.:/ ]+', '_', lib_path) + '.list'
@@ -55,15 +54,13 @@ def popen_readline(cmd):
 
 def search_definitions_src(undefined):
     for src in os.environ.get('src_path', '.').split(':'):
-        proc = subprocess.Popen('grep --word-regexp ^' + undefined + ' ' + src + '/tags | cut --fields=2',
-            shell=True, stdout=subprocess.PIPE)
-    ret = []
-    for src in proc.stdout:
-        src = substitute_paths(src.rstrip())
-        log('proc src=' + src)
-        add(ret, "LDLIBS+=' %s';" % src)
-        #add(ret, "LDLIBS+=' %s';" % (os.path.splitext(src)[0]+'.o')) # an option to add object
-        break
+        ret = []
+        for src in popen('grep --word-regexp ^' + undefined + ' ' + src + '/tags | cut --fields=2'):
+            src = substitute_paths(src.rstrip())
+            log('proc src=' + src)
+            add(ret, "LDLIBS+=' %s';" % src)
+            #add(ret, "LDLIBS+=' %s';" % (os.path.splitext(src)[0]+'.o')) # an option to add object
+            break
     if ret:
         return ret
     return "# unresolved " + undefined
@@ -120,16 +117,14 @@ def search_declarations(undeclared):
         # TODO: optional current dir (-C ...)
         print('Building prototype.tags', file=sys.stderr)
         os.system('ctags -o prototype.tags --recurse --sort=no --c-kinds=p ' + src_path)
-    proc = subprocess.Popen(
+    #return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.readline().rstrip('\n');
+    ret = []
+    for line in popen(
             'grep "^' + undeclared + '\t" ' + includedir_tags + ' prototype.tags '
             '| cut --fields=2'
             '| awk "{ print length, \$0 }"'
             '| sort --numeric-sort --stable'
-            '| cut --delimiter=" " --fields=2-'
-            , shell=True, stdout=subprocess.PIPE)
-    #return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.readline().rstrip('\n');
-    ret = []
-    for line in proc.stdout:
+            '| cut --delimiter=" " --fields=2-'):
         log('proc line=' + line)
         for p in os.environ.get('CPATH', '').split(':') + [includedir]:
             if p != '': line = re.sub('^' + p + '/', '', line)
@@ -142,10 +137,8 @@ def search_declarations(undeclared):
 
 def search_command(command):
     log(command)
-    proc = subprocess.Popen('/usr/lib/command-not-found ' + command + ' 2>&1 ',
-        shell=True, stdout=subprocess.PIPE)
     res = []
-    for line in proc.stdout:
+    for line in popen('/usr/lib/command-not-found ' + command + ' 2>&1 '):
         log(line)
         m = re.match('.*apt(-get)? install ([\w-]+)', line)
         if m:
@@ -167,9 +160,7 @@ def search_file(f):
     #log(find_opt)
     for p in os.environ.get('file_search_path', '.').split(':'):
         log(p)
-        proc = subprocess.Popen('find ' + p + ' ' + os.environ.get('find_flags', '') + ' -name .pc -prune -o -path "*/' + f + '" -printf "%P\n"',
-            shell=True, stdout=subprocess.PIPE)
-        for line in proc.stdout:
+        for line in popen('find ' + p + ' ' + os.environ.get('find_flags', '') + ' -name .pc -prune -o -path "*/' + f + '" -printf "%P\n"'):
             log(line)
             m = re.match('(.*)/' + f, line)
             if m:
