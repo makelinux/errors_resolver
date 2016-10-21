@@ -20,9 +20,6 @@ In this example errors_resolver.py searches tags and provides missing header fil
 
 You can see saved output in file [errors_resolver_demo.log](https://github.com/makelinux/errors_resolver/blob/master/errors_resolver_demo.log)
 
-```
-rm tags *.tags *.list *.tmp sub/libsub.so errors_resolver_sample
-```
 ## Run above demo with cross compiler:
 ```
 CC=arm-linux-gnueabi-gcc ./errors_resolver_demo
