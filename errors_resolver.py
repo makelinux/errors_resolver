@@ -94,6 +94,12 @@ def search_lib_path(lib):
         # arm-linux-gnueabi-gcc doesn't support LIBRARY_PATH
         #return ["LIBRARY_PATH+=':%s';" % m.group(1), "LD_LIBRARY_PATH+=':%s';" % m.group(1)]
         return ["LDFLAGS+=' -L %s';" % m.group(1), "LD_LIBRARY_PATH+=':%s';" % m.group(1)]
+    res = []
+    print('Searching for lib%s.so in repository' % lib, file=sys.stderr)
+    for package in popen('apt-file search --regexp .*/lib%s\.so$' % (lib)):
+        log('found ' + package)
+        add(res, "install+=' %s'" % package.split(':')[0])
+    return res
 
 def search_declarations(undeclared):
     log(undeclared)
@@ -151,7 +157,6 @@ def search_command(command):
     return res
 
 def search_file(f):
-    # apt-file search $1
     log(f)
     res = []
     #find_opt = ''
@@ -166,6 +171,11 @@ def search_file(f):
             if m:
                 log('{'+ m.group(1) + '}')
                 add(res, 'CPATH+=":%s";' % substitute_paths(m.group(1)))
+    if res == []:
+        print('Searching for %s in repository' % f, file=sys.stderr)
+        for package in popen('apt-file search --fixed-string %s/%s' % (includedir, f)):
+            log('found ' + package)
+            add(res, "install+=' %s'" % package.split(':')[0])
     return res
 
 def need_package(package):
