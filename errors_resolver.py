@@ -167,6 +167,7 @@ def search_file(f):
         log(p)
         for line in popen('find ' + p + ' ' + os.environ.get('find_flags', '') + ' -name .pc -prune -o -path "*/' + f + '" -printf "%P\n"'):
             log(line)
+            # get path to found file
             m = re.match('(.*)/' + f, line)
             if m:
                 log('{'+ m.group(1) + '}')
