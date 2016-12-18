@@ -1,17 +1,13 @@
 #!/bin/bash
 
-if [[ ! -x /usr/lib/command-not-found ]]; then
-	echo "This demo requires utility /usr/lib/command-not-found, https://launchpad.net/command-not-found"
-	exit 1
-fi
-
 install=
 
 fff()
 {
 	echo | gfortran
-	echo | prolog
+	echo | gprolog
 	echo | irc
+	echo | tex
 }
 
 echo "It's supposed that some packages are not installed and some command are not found:"

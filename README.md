@@ -78,7 +78,7 @@ Uses tools for searing of missing components:
 
 ```
  # assure that demo package is not installed
- test -e /usr/include/aalib.h && sudo apt-get -y remove libaa1-dev
+ test -e /usr/include/aalib.h && (sudo apt-get -y remove libaa1-dev || sudo yum remove -y aalib-devel)
  echo "#include <aalib.h>" | gcc -E - 2>&1 | ./errors_resolver.py
  gcc -l aa 2>&1 | ./errors_resolver.py
 ```
