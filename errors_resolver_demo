@@ -14,6 +14,7 @@ showv() { val=$(eval "echo \$${1}"); echo -n "$1='$val' $2"; }
 fatal() { echo "Fatal error $1"; exit 1; }
 
 (echo | python) || fatal
+(echo | gcc - -E > /dev/null) || fatal
 
 echo -e "Initial invironment\n"
 # Feature substitute_paths allows to substitute long paths to shortcut variables.

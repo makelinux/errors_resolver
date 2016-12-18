@@ -289,7 +289,7 @@ def parse_fileinput():
         print(s)
 
 if not os.path.isfile('tags'):
-    if os.system('ctags --recurse --sort=no ' + src_path) !=0:
+    if os.system('ctags --recurse --sort=no ' + src_path) != 0:
         print('echo please install ctags')
         exit(1)
 
