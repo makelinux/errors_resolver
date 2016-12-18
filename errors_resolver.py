@@ -228,18 +228,18 @@ def parse_errno(solutions, line, error):
 
 def parse_line_for_errors(l):
     s = []
+    l = re.sub(r"['`‘’]", "'", l)
 
     # Compilation and linkage errors:
-    parse_err(s, l, 'fatal error: ([^:^ ]+): No such file or directory', search_file)
-    parse_err(s, l, 'error: unknown type name ‘(.*)’.*', search_declarations)
-    parse_err(s, l, 'warning: implicit declaration of function ‘(.*)’.*', search_declarations)
-    parse_err(s, l, 'warning: incompatible implicit declaration of built-in function ‘(.*)’.*', search_declarations)
-    parse_err(s, l, 'error: ‘(.*)’ undeclared.*', search_declarations)
-    parse_err(s, l, 'undefined reference to `(.*)\'.*', search_definitions)
-    parse_err(s, l, 'configure:\d+: error: (\w+) is missing', search_lib_path)
-    parse_err(s, l, 'ld: cannot find -l(.*)', search_lib_path)
-    parse_err(s, l, 'warning: lib(.*?)\..*, needed by .*, not found .*', search_lib_path)
-    parse_err(s, l, 'error while loading shared libraries: lib(.*?)\..*: cannot open shared object file', search_lib_path)
+    parse_err(s, l, "error: unknown type name '(.*)'.*", search_declarations)
+    parse_err(s, l, "warning: implicit declaration of function '(.*)'.*", search_declarations)
+    parse_err(s, l, "warning: incompatible implicit declaration of built-in function '(.*)'.*", search_declarations)
+    parse_err(s, l, "error: '(.*)' undeclared.*", search_declarations)
+    parse_err(s, l, "undefined reference to '(.*)'.*", search_definitions)
+    parse_err(s, l, "configure:\d+: error: (\w+) is missing", search_lib_path)
+    parse_err(s, l, "ld: cannot find -l(.*)", search_lib_path)
+    parse_err(s, l, "warning: lib(.*?)\..*, needed by .*, not found .*", search_lib_path)
+    parse_err(s, l, "error while loading shared libraries: lib(.*?)\..*: cannot open shared object file", search_lib_path)
     # ld: cannot find sub/sub.o: No such file or directory
     # cc: error: sub/sub.o: No such file or directory
     #TODO:
@@ -249,8 +249,11 @@ def parse_line_for_errors(l):
     parse_err(s, l, '/usr/lib/(command-not-found): No such file or directory', need_package)
     parse_err(s, l, '([^:^ ]+): command not found', search_command)
     parse_err(s, l, 'failed to run (.*?):', search_command)
+    parse_err(s, l, 'env: ([^:^ ]+): No such file or directory', search_command)
     #parse_err(s, l, ': ([^:^ ]+): not found', search_command)
     err2cmd(s, l, 'ImportError: No module named (.*)', 'sudo pip install %s')
+
+    parse_err(s, l, ": ([^:^ ]+): No such file or directory", search_file)
 
     # Decoding errno
     if re.match('make: .* Error 1', l) is None:
