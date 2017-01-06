@@ -198,7 +198,9 @@ def search_file(f):
             if m:
                 log('{'+ m.group(1) + '}')
                 add(res, 'CPATH+=":%s";' % substitute_paths(m.group(1)))
-    p = '%s/%s' % (includedir, f)
+    p = f
+    if not p.startswith('/'):
+        p = '%s/%s' % (includedir, f)
     print('Searching for %s in repository' % p, file=sys.stderr)
     if res == []:
         if os.system('apt-file -h > /dev/null 2>&1') == 0:
