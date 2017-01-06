@@ -262,7 +262,8 @@ def parse_errno(solutions, line, error):
 
 def parse_line_for_errors(l):
     s = []
-    l = re.sub(r"['`‘’]", "'", l)
+    l = l.replace('‘', "'").replace('’', "'").replace('`', "'")
+    log('line2=' + l)
 
     # Compilation and linkage errors:
     parse_err(s, l, "error: unknown type name '(.*)'.*", search_declarations)
