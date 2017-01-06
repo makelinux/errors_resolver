@@ -284,16 +284,21 @@ def parse_line_for_errors(l):
     parse_err(s, l, '/usr/lib/(command-not-found): No such file or directory', need_package)
     parse_err(s, l, '([^:^ ]+): command not found', search_command)
     parse_err(s, l, 'failed to run (.*?):', search_command)
-    parse_err(s, l, 'env: ([^:^ ]+): No such file or directory', search_command)
-    #parse_err(s, l, ': ([^:^ ]+): not found', search_command)
+    parse_err(s, l, ': ([^:^ ]+): No such file or directory', search_command)
+    parse_err(s, l, ': ([^:^ ]+): not found', search_command)
+    parse_err(s, l, 'ERROR: ([^:^ ]+) does not seem to be installed.', search_command) # ERROR: msgfmt does not seem to be installed.
+    parse_err(s, l, "command '(.*)' not found", search_command) # command 'i686-pc-linux-gnu-g++' not found
+    parse_err(s, l, "error: ([^:^ ]+) wasn't found", search_command)
+    parse_err(s, l, "'(.*)' is needed", search_command)
+    parse_err(s, l, "Could not find a ([^:^ ]+) in your PATH", search_command)
     err2cmd(s, l, 'ImportError: No module named (.*)', 'sudo pip install %s')
 
     parse_err(s, l, ": ([^:^ ]+): No such file or directory", search_file)
+    parse_err(s, l, ': ([^:^ ]+): bad interpreter: No such file or directory', search_file)
 
     # Decoding errno
-    if re.match('make: .* Error 1', l) is None:
+    if re.match('make.*: .* Error \d+', l) is None:
         parse_errno(s, l, 'error[= ](-?\d+)')
-    parse_errno(s, l, 'errno[= ](-?\d+)')
     parse_errno(s, l, 'return code = (-?\d+)')
 
     # Investigating system logs:
