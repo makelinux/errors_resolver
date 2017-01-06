@@ -100,7 +100,7 @@ def search_lib_path(lib):
         for package in popen('apt-file search --regexp .*/lib%s\.so$' % (re.escape(lib))):
             log('found ' + package)
             add(res, "install+=' %s'" % package.split(':')[0])
-    elif os.system('yum whatprovides -h > /dev/null 2> /dev/null') == 0:
+    elif os.system('yum whatprovides -h > /dev/null 2>&1') == 0:
         res = yum_whatprovides('*/lib' + lib + '.so')
     else:
         print("Can't search repository", file=sys.stderr)
@@ -152,7 +152,7 @@ def yum_whatprovides(f):
         m = re.match('([^ ]+-[^ ]+) : ', l)
         if m:
             log('{'+ m.group(1) + '}')
-            for info in popen('yum info ' + m.group(1) + ' 2>/dev/null'):
+            for info in popen('yum info ' + m.group(1) + ' 2> /dev/null'):
                 m = re.match('Name +: (.*)', info)
                 if m: add(res, "install+=' %s'" % m.group(1))
     return res
@@ -176,7 +176,7 @@ def search_command(command):
             for package in popen('apt-file search --regexp  "/bin/%s$"' % re.escape(command)):
                 log('found ' + package)
                 add(res, "install+=' %s'" % package.split(':')[0])
-    elif os.system('yum whatprovides -h > /dev/null 2> /dev/null') == 0:
+    elif os.system('yum whatprovides -h > /dev/null 2>&1') == 0:
         res = yum_whatprovides('*/bin/' + command)
     else:
             print("Can't search repository", file=sys.stderr)
@@ -205,7 +205,7 @@ def search_file(f):
             for package in popen('apt-file search --fixed-string %s' % p):
                 log('found ' + package)
                 add(res, "install+=' %s'" % package.split(':')[0])
-        elif os.system('yum whatprovides -h > /dev/null 2> /dev/null') == 0:
+        elif os.system('yum whatprovides -h > /dev/null 2>&1') == 0:
             res = yum_whatprovides(p)
         else:
             print("Can't search repository", file=sys.stderr)
