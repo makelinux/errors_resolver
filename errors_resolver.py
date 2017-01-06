@@ -202,15 +202,15 @@ def search_file(f):
     if not p.startswith('/'):
         p = '%s/%s' % (includedir, f)
     print('Searching for %s in repository' % p, file=sys.stderr)
-    if res == []:
-        if os.system('apt-file -h > /dev/null 2>&1') == 0:
-            for package in popen('apt-file search --fixed-string %s' % p):
-                log('found ' + package)
-                add(res, "install+=' %s'" % package.split(':')[0])
-        elif os.system('yum whatprovides -h > /dev/null 2>&1') == 0:
-            res = yum_whatprovides(p)
-        else:
-            print("Can't search repository", file=sys.stderr)
+    #if res == []: # TODO
+    if os.system('apt-file -h > /dev/null 2>&1') == 0:
+        for package in popen('apt-file search --fixed-string %s' % p):
+            log('found ' + package)
+            add(res, "install+=' %s'" % package.split(':')[0])
+    elif os.system('yum whatprovides -h > /dev/null 2>&1') == 0:
+        res = yum_whatprovides(p)
+    else:
+        print("Can't search repository", file=sys.stderr)
     return res
 
 def need_package(package):
