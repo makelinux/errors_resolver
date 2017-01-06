@@ -97,7 +97,7 @@ def search_lib_path(lib):
     res = []
     print('Searching for lib%s.so in repository' % lib, file=sys.stderr)
     if os.system('apt-file -h > /dev/null 2>&1') == 0:
-        for package in popen('apt-file search --regexp .*/lib%s\.so$' % (lib)):
+        for package in popen('apt-file search --regexp .*/lib%s\.so$' % (re.escape(lib))):
             log('found ' + package)
             add(res, "install+=' %s'" % package.split(':')[0])
     elif os.system('yum whatprovides -h > /dev/null 2> /dev/null') == 0:
@@ -173,7 +173,7 @@ def search_command(command):
                 log('{'+ m.group(1) + '}')
                 add(res, "install+=' %s';" % m.group(1))
     elif os.system('apt-file -h > /dev/null 2>&1') == 0:
-            for package in popen('apt-file search --regexp  "/bin/%s$"' % command):
+            for package in popen('apt-file search --regexp  "/bin/%s$"' % re.escape(command)):
                 log('found ' + package)
                 add(res, "install+=' %s'" % package.split(':')[0])
     elif os.system('yum whatprovides -h > /dev/null 2> /dev/null') == 0:
