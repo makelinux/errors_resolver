@@ -15,10 +15,10 @@ fff
 echo
 
 echo "The output of errors_resolver.py:"
-fff 2>&1 | ./errors_resolver.py
+fff |& ./errors_resolver.py
 echo
 
 echo "Result:"
-eval $(fff 2>&1 | ./errors_resolver.py)
+eval $(fff |& ./errors_resolver.py)
 echo "This packages provide above not found commands: $install"
 test -n "$install"

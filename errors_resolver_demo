@@ -31,7 +31,7 @@ echo
 pass()
 {
 	echo -e "$1\n"
-	eval "$(make --always-make errors_resolver_sample 2>&1 | tee make.tmp | ./errors_resolver.py | tee out.tmp)"
+	eval "$(make --always-make errors_resolver_sample |& tee make.tmp | ./errors_resolver.py | tee out.tmp)"
 	grep -e warning: -e error: -e undefined -e cannot make.tmp
 	echo -e "\nFix:"
 	cat out.tmp
