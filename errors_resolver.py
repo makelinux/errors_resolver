@@ -55,7 +55,7 @@ def popen_readline(cmd):
 def search_definitions_src(undefined):
     for src in os.environ.get('src_path', '.').split(':'):
         ret = []
-        for src in popen('grep --word-regexp ^' + undefined + ' ' + src + '/tags | cut --fields=2'):
+        for src in popen('grep --word-regexp "^' + undefined + '" ' + src + '/tags | cut --fields=2'):
             src = substitute_paths(src.rstrip())
             log('proc src=' + src)
             add(ret, "LDLIBS+=' %s';" % src)
