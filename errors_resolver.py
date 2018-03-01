@@ -117,6 +117,7 @@ def search_declarations(undeclared):
         os.environ["CTAGS"] += " --exclude=mysql" # avoid mysql/my_pthread.h collision
         os.environ["CTAGS"] += " --exclude=pthreadtypes.h" # favor pthread.h
         os.environ["CTAGS"] += " --exclude=stdio2.h" # favor stdio.h
+        os.environ["CTAGS"] += " --exclude=lightweight_thread.hpp"
         os.environ["CTAGS"] += " --exclude=internal"
         os.environ["CTAGS"] += " --sort=no --recurse "
         os.environ["CTAGS"] += " --c-kinds=+ep "
