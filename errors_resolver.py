@@ -6,6 +6,9 @@ from pprint import pprint
 import fileinput, re, subprocess, os, sys, inspect
 from subprocess import check_output
 
+exclude_includes = os.environ.get("exclude_includes",
+        "lightweight_thread.hpp etip.h my_pthread.h pthreadtypes.h stdio2.h")
+
 verbose = int(os.environ.get('verbose', '0'))
 
 def log(*args, **kwargs):
@@ -113,11 +116,6 @@ def search_declarations(undeclared):
         os.environ["CTAGS"] = os.environ.get("CTAGS",'')
         os.environ["CTAGS"] += " -I __THROW,__THROWNL,__nonnull+"
         # Credit: http://stackoverflow.com/questions/1632633/ctags-does-not-parse-stdio-h-properly#1632633
-        os.environ["CTAGS"] += " --exclude=etip.h" # avoid 'exit' collision
-        os.environ["CTAGS"] += " --exclude=mysql" # avoid mysql/my_pthread.h collision
-        os.environ["CTAGS"] += " --exclude=pthreadtypes.h" # favor pthread.h
-        os.environ["CTAGS"] += " --exclude=stdio2.h" # favor stdio.h
-        os.environ["CTAGS"] += " --exclude=lightweight_thread.hpp"
         os.environ["CTAGS"] += " --exclude=internal"
         os.environ["CTAGS"] += " --sort=no --recurse "
         os.environ["CTAGS"] += " --c-kinds=+ep "
@@ -137,10 +135,16 @@ def search_declarations(undeclared):
             '| awk "{ print length, \$0 }"'
             '| sort --numeric-sort --stable'
             '| cut --delimiter=" " --fields=2-'):
-        log('proc line=' + line)
+        line = line.rstrip()
+        # remove CPATH from include path
         for p in os.environ.get('CPATH', '').split(':') + [includedir]:
             if p != '': line = re.sub('^' + p + '/', '', line)
-        add(ret, "CPPFLAGS+=' -include %s';" % line.rstrip())
+        log('proc line=' + line)
+        for p in exclude_includes.split():
+            log('exclude_includes=' + p)
+            if p in line: line = None; break
+        if line:
+            add(ret, "CPPFLAGS+=' -include %s';" % line)
         # for demo the first result is enough
         break
     if ret:
