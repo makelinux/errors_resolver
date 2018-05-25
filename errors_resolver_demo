@@ -11,6 +11,16 @@ CPPFLAGS=-Wall
 
 showv() { val=$(eval "echo \$${1}"); test "$val" && echo -n "$1='$val' $2"; }
 
+show_vars()
+{
+	showv CC
+	showv CPATH
+	showv CPPFLAGS
+	#showv LIBRARY_PATH
+	showv LDFLAGS
+	showv LDLIBS
+}
+
 fatal() { echo "Fatal error $1"; exit 1; }
 
 (echo | python) || fatal
@@ -66,11 +76,7 @@ run_errors_resolver_sample()
 	fi
 
 	echo -e "\nFinal result:\n"
-	showv CPATH
-	showv CPPFLAGS
-	#showv LIBRARY_PATH
-	showv LDFLAGS
-	showv LDLIBS
+	show_vars
 	echo "make -B $target "
 	showv LD_LIBRARY_PATH
 	echo ./$target
