@@ -4,5 +4,9 @@ errors_resolver_sample.d
 prototype.tags
 system.tags
 tags
+*.tags
+*.list
+*.log
+*.o
 *.so
 *.tmp
