@@ -14,6 +14,8 @@ showv() { val=$(eval "echo \$${1}"); test "$val" && echo -n "$1='$val' $2"; }
 show_vars()
 {
 	showv CC
+	showv CXX
+	showv CXXFLAGS
 	showv CPATH
 	showv CPPFLAGS
 	#showv LIBRARY_PATH
@@ -25,6 +27,7 @@ fatal() { echo "Fatal error $1"; exit 1; }
 
 (echo | python) || fatal
 (echo | gcc - -E > /dev/null) || fatal
+(echo | g++ - -E > /dev/null) || fatal
 
 echo -e "Initial invironment\n"
 # Feature substitute_paths allows to substitute long paths to shortcut variables.
@@ -82,4 +85,26 @@ run_errors_resolver_sample()
 	echo ./$target
 }
 
-run_errors_resolver_sample
+run_errors_resolver_sample_cpp()
+{
+	echo -e "\nC++ sample\n"
+	export CXXFLAGS=-std=c++98
+	target=errors_resolver_sample_cpp
+	pass "pass 1: resolve C++ standard"
+
+	show_vars
+	echo -e "\n\nFinal compilation:\n"
+	make --always-make $target || fatal
+
+	echo -e "\nFinal result:\n"
+	show_vars
+	echo "make -B $target "
+	echo "./$target "
+}
+
+if [ -n "$*" ]; then
+	eval "$*"
+else
+	(run_errors_resolver_sample)
+	(run_errors_resolver_sample_cpp)
+fi

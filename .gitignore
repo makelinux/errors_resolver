@@ -10,3 +10,4 @@ tags
 *.o
 *.so
 *.tmp
+errors_resolver_sample_cpp

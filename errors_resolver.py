@@ -280,6 +280,11 @@ def parse_line_for_errors(l):
     parse_err(s, l, "ld: cannot find -l(.*)", search_lib_path)
     parse_err(s, l, "warning: lib(.*?)\..*, needed by .*, not found .*", search_lib_path)
     parse_err(s, l, "error while loading shared libraries: lib(.*?)\..*: cannot open shared object file", search_lib_path)
+    if (False
+            or re.match(".*error: converting to 'std::__cxx11::list<int>'", l, re.IGNORECASE)
+            or re.match(".*error: in C\+\+98 .* must be initialized by constructor, not by '{\.\.\.}'", l, re.IGNORECASE)
+            or re.match(".*error: could not convert '{.*}' from '<brace-enclosed initializer list>' to 'std::vector<int>'", l, re.IGNORECASE)):
+        s += [ 'CXXFLAGS="${CXXFLAGS/-std=c++*/} -std=c++11"' ]
     # ld: cannot find sub/sub.o: No such file or directory
     # cc: error: sub/sub.o: No such file or directory
     #TODO:
