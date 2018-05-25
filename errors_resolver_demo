@@ -31,12 +31,14 @@ echo
 pass()
 {
 	echo -e "$1\n"
-	eval "$(make --always-make errors_resolver_sample |& tee make.tmp | ./errors_resolver.py | tee out.tmp)"
+	eval "$(make --always-make $target |& tee make.tmp | ./errors_resolver.py | tee out.tmp)"
 	grep -e warning: -e error: -e undefined -e cannot make.tmp
 	echo -e "\nFix:"
 	cat out.tmp
 	echo
 }
+
+target=errors_resolver_sample
 
 pass "pass 1: resolve headers paths"
 pass "pass 2: resolve headers"
@@ -44,10 +46,10 @@ pass "pass 3: resolve libraries"
 pass "pass 3: resolve library paths"
 
 echo -e "Final compilation:\n"
-make --always-make errors_resolver_sample || fatal
+make --always-make $target || fatal
 
-if [ -e ./errors_resolver_sample ]; then
-	arch=$(echo $(file -e elf ./errors_resolver_sample | cut -d',' -f2 | tr - _))
+if [ -e ./$target ]; then
+	arch=$(echo $(file -e elf ./$target | cut -d',' -f2 | tr - _))
 else
 	arch=$(uname -m)
 fi
@@ -56,10 +58,10 @@ echo -e "\nTest run:\n"
 
 if [[ $arch = $(uname -m) ]];
 then
-	./errors_resolver_sample
+	./$target
 else
 	echo detected architecture $arch, machine $($CC -dumpmachine)
-	qemu-${arch,,} -L /usr/"$($CC -dumpmachine)" ./errors_resolver_sample
+	qemu-${arch,,} -L /usr/"$($CC -dumpmachine)" ./$target
 fi
 
 echo -e "\nFinal result:\n"
@@ -68,6 +70,6 @@ showv CPPFLAGS
 #showv LIBRARY_PATH
 showv LDFLAGS
 showv LDLIBS
-echo "make -B errors_resolver_sample "
+echo "make -B $target"
 showv LD_LIBRARY_PATH
-echo ./errors_resolver_sample
+echo ./$target
