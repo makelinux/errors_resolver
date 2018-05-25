@@ -92,7 +92,7 @@ def search_lib_path(lib):
     line = popen_readline('find ' + lib_path + ' -name "lib' + lib + '.so" -printf "%P\n" 2> /dev/null')
     log(line)
     m = re.match(r'(.*)\/lib.*\.so', line)
-    if m is not None:
+    if m:
         log(m.group(1))
         # arm-linux-gnueabi-gcc doesn't support LIBRARY_PATH
         #return ["LIBRARY_PATH+=':%s';" % m.group(1), "LD_LIBRARY_PATH+=':%s';" % m.group(1)]
@@ -244,7 +244,7 @@ def parse_error(line, error, _type):
 
 def parse_err(solutions, line, error, solution_func):
     m = re.match('.*?' + error, line, re.IGNORECASE)
-    if m is not None:
+    if m:
         log('line=' + line)
         log('error=' + error)
         add(solutions, solution_func(m.group(1)))
@@ -252,7 +252,7 @@ def parse_err(solutions, line, error, solution_func):
 def err2cmd(solutions, line, error, command):
     if '%s' in command:
         m = re.match('.*?' + error, line)
-        if m is not None:
+        if m:
             add(solutions, command % m.group(1))
     else:
         if re.match('.*?' + error, line):
@@ -260,7 +260,7 @@ def err2cmd(solutions, line, error, command):
 
 def parse_errno(solutions, line, error):
     m = re.match('.*?' + error, line, re.IGNORECASE)
-    if m is not None:
+    if m:
         log('line=' + line)
         log('error=' + error)
         add(solutions, 'echo "\'%s\' in %s"' % (os.strerror(abs(int(m.group(1)))), line))
