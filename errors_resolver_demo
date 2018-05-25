@@ -38,38 +38,42 @@ pass()
 	echo
 }
 
-target=errors_resolver_sample
+run_errors_resolver_sample()
+{
+	target=errors_resolver_sample
 
-pass "pass 1: resolve headers paths"
-pass "pass 2: resolve headers"
-pass "pass 3: resolve libraries"
-pass "pass 3: resolve library paths"
+	pass "pass 1: resolve headers paths"
+	pass "pass 2: resolve headers"
+	pass "pass 3: resolve libraries"
+	pass "pass 3: resolve library paths"
 
-echo -e "Final compilation:\n"
-make --always-make $target || fatal
+	echo -e "Final compilation:\n"
+	make --always-make $target || fatal
 
-if [ -e ./$target ]; then
-	arch=$(echo $(file -e elf ./$target | cut -d',' -f2 | tr - _))
-else
-	arch=$(uname -m)
-fi
+	if [ -e ./$target ]; then
+		arch=$(echo $(file -e elf ./$target | cut -d',' -f2 | tr - _))
+	else
+		arch=$(uname -m)
+	fi
 
-echo -e "\nTest run:\n"
+	echo -e "\nTest run:\n"
 
-if [[ $arch = $(uname -m) ]];
-then
-	./$target
-else
-	echo detected architecture $arch, machine $($CC -dumpmachine)
-	qemu-${arch,,} -L /usr/"$($CC -dumpmachine)" ./$target
-fi
+	if [[ $arch = $(uname -m) ]]; then
+		./$target
+	else
+		echo detected architecture $arch, machine $($CC -dumpmachine)
+		qemu-${arch,,} -L /usr/"$($CC -dumpmachine)" ./$target
+	fi
 
-echo -e "\nFinal result:\n"
-showv CPATH
-showv CPPFLAGS
-#showv LIBRARY_PATH
-showv LDFLAGS
-showv LDLIBS
-echo "make -B $target"
-showv LD_LIBRARY_PATH
-echo ./$target
+	echo -e "\nFinal result:\n"
+	showv CPATH
+	showv CPPFLAGS
+	#showv LIBRARY_PATH
+	showv LDFLAGS
+	showv LDLIBS
+	echo "make -B $target "
+	showv LD_LIBRARY_PATH
+	echo ./$target
+}
+
+run_errors_resolver_sample
