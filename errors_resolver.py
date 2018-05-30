@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: UTF-8 -*-
 
 from __future__ import print_function
@@ -17,7 +17,7 @@ def log(*args, **kwargs):
     pass
 
 def popen(p):
-    return subprocess.Popen(p, shell=True, stdout=subprocess.PIPE).stdout
+    return subprocess.Popen(p, shell=True, stdout=subprocess.PIPE, encoding="utf-8").stdout
 
 #
 # Configuration:
@@ -53,7 +53,7 @@ def substitute_paths(path):
 def popen_readline(cmd):
     log(cmd)
     #return check_output(cmd, shell=True)
-    return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE).stdout.readline().rstrip('\n');
+    return subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, encoding="utf-8").stdout.readline().rstrip('\n');
 
 def search_definitions_src(undefined):
     for src in os.environ.get('src_path', '.').split(':'):

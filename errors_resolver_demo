@@ -27,7 +27,7 @@ show_vars()
 
 fatal() { echo "Fatal error $1"; exit 1; }
 
-(echo | python) || fatal
+(echo | python3) || fatal
 (echo | gcc - -E > /dev/null) || fatal
 (echo | g++ - -E > /dev/null) || fatal
 
