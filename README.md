@@ -1,6 +1,6 @@
-# Errors resolver
+# Errors Resolver
 
-The mission of Errors resolver is to provide resolutions or recommendations for standard errors. For example it analyzes some build errors caused by missing components, searches the missing components in system environment and provides a location to missing components.
+Errors Resolver provides resolutions or recommendations for standard errors. For example, it analyzes some build errors caused by missing components, searches the missing components in the system environment and provides a location to these missing components.
 
 For example:
 
@@ -10,7 +10,7 @@ Output with solution:
 
   LDLIBS+=' -l pthread';
 
-In this example errors_resolver.py searches tags and provides missing header file.
+In this example errors_resolver.py searches tags and provides the missing header file.
 
 ## Demonstrations:
 
@@ -69,7 +69,7 @@ Demo supports cross compiler
 Provides modification of standard environment variables:
 * CPATH, CPPFLAGS, LIBRARY_PATH, LDFLAGS, LDLIBS, LD_LIBRARY_PATH
 
-Uses tools for searing of missing components:
+Uses tools for searching of missing components:
 * ctags, nm, find
 * /usr/lib/command-not-found
 * apt-file search
@@ -83,7 +83,7 @@ Uses tools for searing of missing components:
  gcc -l aa |& ./errors_resolver.py
 ```
 
- Both examples above give output
+ Both examples above give output:
  install+=' libaa1-dev'
 
 ## Regression test:
@@ -93,7 +93,7 @@ Uses tools for searing of missing components:
 ## To to list:
 * Analyze more ./configure errors.
 
-You are welcome to request additional features in form of erroneous sample source code (see errors_resolver_sample.c), sample errors and solutions.
+You are welcome to request additional features in the form of erroneous sample source code (see errors_resolver_sample.c), sample errors and solutions.
 
 For further information you are welcome to read sources.
 
